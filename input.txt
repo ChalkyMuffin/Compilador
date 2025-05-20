@@ -1,8 +1,8 @@
 program lol;
-void pene(caca:int)
-[var ano : int;
-var pipi : int;
-{ano = 12;
+void ejemploFuncion(fun:int)
+[var a : int;
+var b : int;
+{a = 12;
 }];
-main {ano = 18;}
+main {a = 18;}
 end;
