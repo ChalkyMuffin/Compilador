@@ -1,0 +1,8 @@
+program lol;
+void pene(caca:int)
+[var ano : int;
+var pipi : int;
+{ano = 12;
+}];
+main {ano = 18;}
+end;

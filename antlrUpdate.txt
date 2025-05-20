@@ -1,0 +1,1 @@
+java -jar lib/antlr-4.13.2-complete.jar -visitor -no-listener -o gen grammar/Expr.g4
