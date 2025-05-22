@@ -14,7 +14,8 @@ public class Main {
 
         ParseTree tree = parser.prog(); // o la regla raíz que tengas
 
-        MiVisitor visitor = new MiVisitor();
+        PilasYCuadruplos pilas = new PilasYCuadruplos();
+        MiVisitor visitor = new MiVisitor(pilas);
         visitor.visit(tree);
 
         // Imprimir tabla de variables después del parseo
@@ -23,8 +24,10 @@ public class Main {
         // Imprimir tabla de variables después del parseo
         visitor.imprimirFunciones();
 
-        // Imprime los cuádruplos generados
-        visitor.pilas.imprimirCuadruplos();
+
+        // Imprimir los cuádruplos generados
+        System.out.println("\n=== CUÁDRUPLOS ===");
+        pilas.imprimirCuadruplos();
 
     }
 }

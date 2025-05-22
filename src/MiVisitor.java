@@ -43,8 +43,13 @@ public class MiVisitor extends ExprBaseVisitor<Void> {
         dirFun.imprimirFunciones();
     }
 
-    PilasSemanticas pilas = new PilasSemanticas();
+//    PilasSemanticas pilas = new PilasSemanticas();
 
+    PilasYCuadruplos pilas;
+
+    public MiVisitor(PilasYCuadruplos pilas) {
+        this.pilas = pilas;
+    }
     @Override
     public Void visitIntConst(ExprParser.IntConstContext ctx) {
         pilas.operandos.push(ctx.INT_NUM().getText());
