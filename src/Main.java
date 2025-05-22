@@ -20,8 +20,11 @@ public class Main {
         // Imprimir tabla de variables después del parseo
         visitor.imprimirVariables();
 
-        visitor.visit(tree);
+        // Imprimir tabla de variables después del parseo
         visitor.imprimirFunciones();
+
+        // Imprime los cuádruplos generados
+        visitor.pilas.imprimirCuadruplos();
 
     }
 }

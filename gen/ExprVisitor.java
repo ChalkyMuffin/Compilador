@@ -68,6 +68,13 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitFuncCallStat(ExprParser.FuncCallStatContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code expressiao}
+	 * labeled alternative in {@link ExprParser#statement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExpressiao(ExprParser.ExpressiaoContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code printStat}
 	 * labeled alternative in {@link ExprParser#statement}.
 	 * @param ctx the parse tree
@@ -112,61 +119,45 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitPrintExpr(ExprParser.PrintExprContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code parens}
+	 * Visit a parse tree produced by the {@code termExpr}
 	 * labeled alternative in {@link ExprParser#expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitParens(ExprParser.ParensContext ctx);
+	T visitTermExpr(ExprParser.TermExprContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code const}
+	 * Visit a parse tree produced by the {@code aritExpr}
 	 * labeled alternative in {@link ExprParser#expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitConst(ExprParser.ConstContext ctx);
+	T visitAritExpr(ExprParser.AritExprContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code MulDiv}
-	 * labeled alternative in {@link ExprParser#expression}.
+	 * Visit a parse tree produced by the {@code mulExpr}
+	 * labeled alternative in {@link ExprParser#term}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitMulDiv(ExprParser.MulDivContext ctx);
+	T visitMulExpr(ExprParser.MulExprContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code AddSub}
-	 * labeled alternative in {@link ExprParser#expression}.
+	 * Visit a parse tree produced by the {@code factorExpr}
+	 * labeled alternative in {@link ExprParser#term}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitAddSub(ExprParser.AddSubContext ctx);
+	T visitFactorExpr(ExprParser.FactorExprContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code Equal}
-	 * labeled alternative in {@link ExprParser#expression}.
+	 * Visit a parse tree produced by {@link ExprParser#factor}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitEqual(ExprParser.EqualContext ctx);
+	T visitFactor(ExprParser.FactorContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code Greater}
-	 * labeled alternative in {@link ExprParser#expression}.
+	 * Visit a parse tree produced by {@link ExprParser#relExpr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitGreater(ExprParser.GreaterContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code id}
-	 * labeled alternative in {@link ExprParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitId(ExprParser.IdContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code Less}
-	 * labeled alternative in {@link ExprParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitLess(ExprParser.LessContext ctx);
+	T visitRelExpr(ExprParser.RelExprContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code intConst}
 	 * labeled alternative in {@link ExprParser#cte}.

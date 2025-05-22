@@ -24,6 +24,7 @@ statement: assign ';'          # assignStat
         | condition           # condStat
         | cycle               # cycleStat
         | f_call ';'          # funcCallStat
+        | expression ';'          # expressiao
         | printExpr ';'           # printStat
         | ';'                 # emptyStat
         ;
@@ -36,18 +37,24 @@ cycle    : 'while' '(' expression ')' 'do' body ;
 
 f_call   : ID '(' (expression (',' expression)*)? ')' ;
 
-printExpr    : 'print' '(' expression ')' ;
+printExpr    : 'print' '(' expression ')' ':' ;
 
-expression
-        : expression op=('*'|'/') expression  # MulDiv
-        | expression op=('+'|'-') expression  # AddSub
-        | expression '>' expression           # Greater
-        | expression '<' expression           # Less
-        | expression '==' expression          # Equal
-        | cte                                 # const
-        | ID                                  # id
-        | '(' expression ')'                 # parens
-        ;
+expression : expression ('+' | '-') term     # aritExpr
+           | term                            # termExpr
+           ;
+
+
+
+term       : term ('*' | '/') factor   # mulExpr
+           | factor                    # factorExpr
+           ;
+
+factor     : '(' expression ')'
+           | ID
+           | cte
+           ;
+
+relExpr    : expression ('<' | '>' | '==' | '!=') expression ;
 
 cte     : INT_NUM      # intConst
         | FLOAT_NUM    # floatConst
