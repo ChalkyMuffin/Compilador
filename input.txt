@@ -1,5 +1,7 @@
 program lol;
 var c : int;
+var d : int;
+
 void ejemploFuncion(fun:int)
 [var a : int;
 var b : float;
