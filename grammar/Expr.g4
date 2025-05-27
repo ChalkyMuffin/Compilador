@@ -5,18 +5,18 @@ grammar Expr;
 
 /* Estructura general del programa */
 prog    : 'program' ID ';'
-          (vars_decl | funcs_decl)*
-          main_body
+          vars_decl?  funcs_decl*?
+          'main' body
           'end' ;
 
-vars_decl : 'var' ID (',' ID)* ':' type ';' ;
+vars_decl : 'var' (ID (',' ID)* ':' type ';')* ;
 
 funcs_decl : 'void' ID '(' params? ')'
-            '[' vars_decl*
+            '[' vars_decl*?
              body ']' ';';
 
 
-main_body : 'main' body ;
+//main_body : 'main' body ;
 
 body     : '{' (vars_decl | statement)* '}' ;
 
