@@ -1,8 +1,9 @@
 program lol;
+var c : int;
 void ejemploFuncion(fun:int)
 [var a : int;
-var b : int;
+var b : float;
 {a = 3 + 5 * 2;
 }];
-main {a = 18;}
+main {c = 18;}
 end;

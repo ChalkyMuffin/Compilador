@@ -28,12 +28,6 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitFuncs_decl(ExprParser.Funcs_declContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link ExprParser#main_body}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitMain_body(ExprParser.Main_bodyContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link ExprParser#body}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

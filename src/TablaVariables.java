@@ -9,6 +9,7 @@ public class TablaVariables {
             System.out.println("Error: variable '" + nombre + "' ya fue declarada.");
         } else {
             variables.put(nombre, tipo);
+            System.out.println("Var: " + nombre + " " + "tipo: " + tipo);
         }
     }
 
