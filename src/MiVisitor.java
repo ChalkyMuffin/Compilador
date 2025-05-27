@@ -5,11 +5,20 @@ public class MiVisitor extends ExprBaseVisitor<Void> {
     TablaVariables tabla = new TablaVariables();
 
     @Override
+    public Void visitVars_declGlobal(ExprParser.Vars_declGlobalContext ctx) {
+        String tipo = ctx.type(0).getText();     // "int" o "float"
+        String nombre = ctx.ID().toString();     // nombre de variable
+
+        tabla.declararVariableGlobal(nombre, tipo);
+        return null;
+    }
+
+    @Override
     public Void visitVars_decl(ExprParser.Vars_declContext ctx) {
         String tipo = ctx.type(0).getText();     // "int" o "float"
         String nombre = ctx.ID().toString();     // nombre de variable
 
-        tabla.declararVariable(nombre, tipo);
+        tabla.declararVariableLocal(nombre, tipo);
         return null;
     }
 
