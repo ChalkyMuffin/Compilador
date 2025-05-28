@@ -74,33 +74,24 @@ public class MiVisitor extends ExprBaseVisitor<Void> {
     public MiVisitor(PilasYCuadruplos pilas) {
         this.pilas = pilas;
     }
+
+
     @Override
     public Void visitIntConst(ExprParser.IntConstContext ctx) {
-        //Constantes
-        String valorStr = ctx.INT_NUM().getText();
-        int direccion = tablaConstantes.agregarConstante(Integer.parseInt(valorStr));
+        int valor = Integer.parseInt(ctx.INT_NUM().getText());
+        int direccion = tablaConstantes.agregarConstante(valor);
 
-        // Pushea la dirección a la pila de operandos
-        pilas.operandos.push(String.valueOf(direccion));
-        pilas.tipos.push("int");
-
-        //Cuadruplos
-        pilas.operandos.push(ctx.INT_NUM().getText());
+        pilas.operandos.push(String.valueOf(direccion));  // Solo dirección virtual
         pilas.tipos.push("int");
         return null;
     }
 
     @Override
     public Void visitFloatConst(ExprParser.FloatConstContext ctx) {
-        //Constantes
-        String valorStr = ctx.FLOAT_NUM().getText();
-        int direccion = tablaConstantes.agregarConstante(Float.parseFloat(valorStr));
+        float valor = Float.parseFloat(ctx.FLOAT_NUM().getText());
+        int direccion = tablaConstantes.agregarConstante(valor);
 
-        pilas.operandos.push(String.valueOf(direccion));
-        pilas.tipos.push("float");
-
-        //Cuadruplos
-        pilas.operandos.push(ctx.FLOAT_NUM().getText());
+        pilas.operandos.push(String.valueOf(direccion));  // Solo dirección virtual
         pilas.tipos.push("float");
         return null;
     }
