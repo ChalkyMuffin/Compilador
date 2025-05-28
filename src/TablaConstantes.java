@@ -27,38 +27,28 @@ public class TablaConstantes {
     private int dirConstanteInt = 20000;    // Constantes int empiezan en 20000
     private int dirConstanteFloat = 20500;  // Constantes float empiezan en 20500
 
-    public int agregarConstante(int valorStr) {
-        // Si la constante ya existe, devolver su dirección
-        if (constantes.containsKey(valorStr)) {
-            return constantes.get(valorStr).getDireccion();
+    public int agregarConstante(int valor) {
+        String clave = String.valueOf(valor);
+        if (constantes.containsKey(clave)) {
+            return constantes.get(clave).getDireccion();
         }
 
-        Object valor;
-        String tipo;
-        int direccion;
+        InfoConstante info = new InfoConstante(valor, "int", dirConstanteInt++);
+        constantes.put(clave, info);
+        System.out.println("Constante: " + valor + " | tipo: int | dirección: " + info.getDireccion());
+        return info.getDireccion();
+    }
 
-        // Determinar si es int o float
-        if (valorStr == (int) valorStr) {
-            // Es int
-            valor = valorStr;
-            tipo = "int";
-            direccion = dirConstanteInt++;
-
-        } else {
-            // Es float
-            valor = valorStr;
-            tipo = "float";
-            direccion = dirConstanteFloat++;
-
+    public int agregarConstante(float valor) {
+        String clave = String.valueOf(valor);
+        if (constantes.containsKey(clave)) {
+            return constantes.get(clave).getDireccion();
         }
 
-        InfoConstante info = new InfoConstante(valor, tipo, direccion);
-        constantes.put(String.valueOf(valorStr), info);
-
-        System.out.println("Constante: " + valorStr + " | tipo: " + tipo +
-                " | dirección: " + direccion);
-
-        return direccion;
+        InfoConstante info = new InfoConstante(valor, "float", dirConstanteFloat++);
+        constantes.put(clave, info);
+        System.out.println("Constante: " + valor + " | tipo: float | dirección: " + info.getDireccion());
+        return info.getDireccion();
     }
 
     public void imprimirConstantes() {

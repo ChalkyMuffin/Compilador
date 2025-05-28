@@ -94,7 +94,7 @@ public class MiVisitor extends ExprBaseVisitor<Void> {
     public Void visitFloatConst(ExprParser.FloatConstContext ctx) {
         //Constantes
         String valorStr = ctx.FLOAT_NUM().getText();
-        int direccion = tablaConstantes.agregarConstante(Integer.parseInt(valorStr));
+        int direccion = tablaConstantes.agregarConstante(Float.parseFloat(valorStr));
 
         pilas.operandos.push(String.valueOf(direccion));
         pilas.tipos.push("float");
