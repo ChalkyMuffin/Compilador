@@ -139,6 +139,9 @@ public class MiVisitor extends ExprBaseVisitor<Void> {
         String variable = ctx.ID().getText();
         visit(ctx.expression());
 
+
+
+
         String resultado = pilas.operandos.pop();
         pilas.tipos.pop();
 

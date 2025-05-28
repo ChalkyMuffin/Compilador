@@ -44,7 +44,6 @@ public class TablaVariables {
             InfoVariable info = new InfoVariable(tipo, direccion, esGlobal);
             variables.put(nombre, info);
 
-            String scope = esGlobal ? "global" : "local";
 
         }
     }

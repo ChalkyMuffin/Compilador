@@ -39,11 +39,14 @@ cycle    : 'while' '(' expression ')' 'do' body ;
 
 f_call   : ID '(' (expression (',' expression)*)? ')' ;
 
-printExpr    : 'print' '(' expression ')' ':' ;
+printExpr    : 'print' '(' expression ')' ;
 
-expression : expression ('+' | '-') term     # aritExpr
-           | term                            # termExpr
-           ;
+expression    : exp ('<' exp | '>' exp| '==' exp | '!=' exp)?  ;
+
+
+exp : term  ('+' term | '-' term)?;
+
+
 
 
 
@@ -52,11 +55,11 @@ term       : term ('*' | '/') factor   # mulExpr
            ;
 
 factor     : '(' expression ')'
+           | ('+' | '-')
            | ID
            | cte
            ;
 
-relExpr    : expression ('<' | '>' | '==' | '!=') expression ;
 
 cte     : INT_NUM      # intConst
         | FLOAT_NUM    # floatConst
