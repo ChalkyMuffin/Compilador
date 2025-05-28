@@ -119,15 +119,14 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitPrintExpr(ExprParser.PrintExprContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code termExpr}
-	 * labeled alternative in {@link ExprParser#expression}.
+	 * Visit a parse tree produced by {@link ExprParser#expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitTermExpr(ExprParser.TermExprContext ctx);
+	T visitExpression(ExprParser.ExpressionContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code aritExpr}
-	 * labeled alternative in {@link ExprParser#expression}.
+	 * labeled alternative in {@link ExprParser#exp}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
@@ -152,12 +151,6 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitFactor(ExprParser.FactorContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link ExprParser#relExpr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitRelExpr(ExprParser.RelExprContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code intConst}
 	 * labeled alternative in {@link ExprParser#cte}.

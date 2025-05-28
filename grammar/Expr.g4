@@ -41,21 +41,22 @@ f_call   : ID '(' (expression (',' expression)*)? ')' ;
 
 printExpr    : 'print' '(' expression ')' ;
 
-expression    : exp ('<' exp | '>' exp| '==' exp | '!=' exp)?  ;
+expression    : exp (MENOR_QUE exp | MAYOR_QUE exp| IGUALDAD_ABS exp | DESIGUALDAD exp)?  ;
 
 
-exp : term  ('+' term | '-' term)?;
+    exp : term  (SUMA term | RESTA term)? # aritExpr
+                ;
 
 
 
 
 
-term       : term ('*' | '/') factor   # mulExpr
+term       : term (MULT | DIVIDE) factor   # mulExpr
            | factor                    # factorExpr
            ;
 
 factor     : '(' expression ')'
-           | ('+' | '-')
+           | (SUMA | RESTA)
            | ID
            | cte
            ;
@@ -77,7 +78,14 @@ ID      : [a-zA-Z][a-zA-Z0-9]* ;
 WS      : [ \t\r\n]+ -> skip ;
 COMMENT : '//' .*? '\n' -> skip ;
 // Delimitadores y puntuación
-SEMI       : ';' ;
+SUMA       : '+' ;
+RESTA       : '-' ;
+MULT       : '*' ;
+DIVIDE       : '/' ;
+MAYOR_QUE       : '>' ;
+MENOR_QUE       : '<' ;
+IGUALDAD_ABS       : '==' ;
+DESIGUALDAD       : '!=' ;
 COMMA      : ',' ;
 LPAREN     : '(' ;
 RPAREN     : ')' ;

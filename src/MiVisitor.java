@@ -23,10 +23,7 @@ public class MiVisitor extends ExprBaseVisitor<Void> {
         return null;
     }
 
-    @Override
-    public Void visitNumber(ExprParser.CteContext ctx) {
-        return null;
-    }
+
 
     public void imprimirVariables() {
         tabla.imprimirVariables();
@@ -113,13 +110,17 @@ public class MiVisitor extends ExprBaseVisitor<Void> {
 
     @Override
     public Void visitAritExpr(ExprParser.AritExprContext ctx) {
-        visit(ctx.expression());  // lado izquierdo
-        visit(ctx.term());        // lado derecho
+        visit(ctx.term(0)); // Visita el primer término
 
-        String operador = ctx.getChild(1).getText(); // '+' o '-'
-        pilas.operadores.push(operador);
+        if (ctx.term().size() > 1) {
+            visit(ctx.term(1)); // Visita el segundo término
 
-        generarCuadruplo();
+            String operador = ctx.getChild(1).getText(); // Puede ser '+' o '-'
+            pilas.operadores.push(operador);
+
+            generarCuadruplo();
+        }
+
         return null;
     }
 
@@ -149,26 +150,22 @@ public class MiVisitor extends ExprBaseVisitor<Void> {
         return null;
     }
     @Override
-    public Void visitRelExpr(ExprParser.RelExprContext ctx) {
-        visit(ctx.expression(0));
-        visit(ctx.expression(1));
+    public Void visitExpression(ExprParser.ExpressionContext ctx) {
+        visit(ctx.exp(0)); // Visita el primer término
 
-        String operador = ctx.getChild(1).getText(); // '<', '>', '==', '!='
-        pilas.operadores.push(operador);
+        if (ctx.exp().size() > 1) {
+            visit(ctx.exp(1)); // Visita el segundo término
 
-        generarCuadruplo();
+            String operador = ctx.getChild(1).getText();
+            pilas.operadores.push(operador);
+
+            generarCuadruplo();
+        }
+
         return null;
     }
 
-    @Override
-    public Void visitConstanteEntero(ExprParser.IntConstContext ctx) {
-        return null;
-    }
 
-    @Override
-    public Void visitConstanteFloat(ExprParser.FloatConstContext ctx) {
-        return null;
-    }
 
     public void generarCuadruplo() {
         if (!pilas.operadores.isEmpty()) {

@@ -10,7 +10,7 @@ import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
  * operations with no return type.
  */
 @SuppressWarnings("CheckReturnValue")
-public abstract class ExprBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements ExprVisitor<T> {
+public class ExprBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements ExprVisitor<T> {
 	/**
 	 * {@inheritDoc}
 	 *
@@ -32,9 +32,6 @@ public abstract class ExprBaseVisitor<T> extends AbstractParseTreeVisitor<T> imp
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitVars_decl(ExprParser.Vars_declContext ctx) { return visitChildren(ctx); }
-
-	public abstract Void visitNumber(ExprParser.CteContext ctx);
-
 	/**
 	 * {@inheritDoc}
 	 *
@@ -139,7 +136,7 @@ public abstract class ExprBaseVisitor<T> extends AbstractParseTreeVisitor<T> imp
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitTermExpr(ExprParser.TermExprContext ctx) { return visitChildren(ctx); }
+	@Override public T visitExpression(ExprParser.ExpressionContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -168,18 +165,6 @@ public abstract class ExprBaseVisitor<T> extends AbstractParseTreeVisitor<T> imp
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitFactor(ExprParser.FactorContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitRelExpr(ExprParser.RelExprContext ctx) { return visitChildren(ctx); }
-
-	public abstract Void visitConstanteEntero(ExprParser.IntConstContext ctx);
-
-	public abstract Void visitConstanteFloat(ExprParser.FloatConstContext ctx);
-
 	/**
 	 * {@inheritDoc}
 	 *
