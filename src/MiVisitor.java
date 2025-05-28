@@ -2,11 +2,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MiVisitor extends ExprBaseVisitor<Void> {
+   //Tabla de variables
     TablaVariables tabla = new TablaVariables();
 
     @Override
     public Void visitVars_declGlobal(ExprParser.Vars_declGlobalContext ctx) {
-        String tipo = ctx.type(0).getText();     // "int" o "float"
+        String tipo = ctx.type().getText();     // "int" o "float"
         String nombre = ctx.ID().toString();     // nombre de variable
 
         tabla.declararVariableGlobal(nombre, tipo);
@@ -15,10 +16,15 @@ public class MiVisitor extends ExprBaseVisitor<Void> {
 
     @Override
     public Void visitVars_decl(ExprParser.Vars_declContext ctx) {
-        String tipo = ctx.type(0).getText();     // "int" o "float"
+        String tipo = ctx.type().getText();     // "int" o "float"
         String nombre = ctx.ID().toString();     // nombre de variable
 
         tabla.declararVariableLocal(nombre, tipo);
+        return null;
+    }
+
+    @Override
+    public Void visitNumber(ExprParser.CteContext ctx) {
         return null;
     }
 
@@ -26,6 +32,7 @@ public class MiVisitor extends ExprBaseVisitor<Void> {
         tabla.imprimirVariables();
     }
 
+    //Directorio de funciones
     DirectorioFunciones dirFun = new DirectorioFunciones();
 
     @Override
@@ -52,8 +59,16 @@ public class MiVisitor extends ExprBaseVisitor<Void> {
         dirFun.imprimirFunciones();
     }
 
-//    PilasSemanticas pilas = new PilasSemanticas();
+    TablaConstantes tablaConstantes = new TablaConstantes();
 
+
+    public void imprimirConstantes() {
+        tablaConstantes.imprimirConstantes();
+    }
+
+
+
+    //Cuadruplos
     PilasYCuadruplos pilas;
 
     public MiVisitor(PilasYCuadruplos pilas) {
@@ -61,6 +76,15 @@ public class MiVisitor extends ExprBaseVisitor<Void> {
     }
     @Override
     public Void visitIntConst(ExprParser.IntConstContext ctx) {
+        //Constantes
+        String valorStr = ctx.INT_NUM().getText();
+        int direccion = tablaConstantes.agregarConstante(Integer.parseInt(valorStr));
+
+        // Pushea la dirección a la pila de operandos
+        pilas.operandos.push(String.valueOf(direccion));
+        pilas.tipos.push("int");
+
+        //Cuadruplos
         pilas.operandos.push(ctx.INT_NUM().getText());
         pilas.tipos.push("int");
         return null;
@@ -68,6 +92,14 @@ public class MiVisitor extends ExprBaseVisitor<Void> {
 
     @Override
     public Void visitFloatConst(ExprParser.FloatConstContext ctx) {
+        //Constantes
+        String valorStr = ctx.FLOAT_NUM().getText();
+        int direccion = tablaConstantes.agregarConstante(Integer.parseInt(valorStr));
+
+        pilas.operandos.push(String.valueOf(direccion));
+        pilas.tipos.push("float");
+
+        //Cuadruplos
         pilas.operandos.push(ctx.FLOAT_NUM().getText());
         pilas.tipos.push("float");
         return null;
@@ -133,6 +165,17 @@ public class MiVisitor extends ExprBaseVisitor<Void> {
         generarCuadruplo();
         return null;
     }
+
+    @Override
+    public Void visitConstanteEntero(ExprParser.IntConstContext ctx) {
+        return null;
+    }
+
+    @Override
+    public Void visitConstanteFloat(ExprParser.FloatConstContext ctx) {
+        return null;
+    }
+
     public void generarCuadruplo() {
         if (!pilas.operadores.isEmpty()) {
             String operador = pilas.operadores.pop();

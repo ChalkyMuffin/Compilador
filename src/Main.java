@@ -18,11 +18,12 @@ public class Main {
         MiVisitor visitor = new MiVisitor(pilas);
         visitor.visit(tree);
 
-        // Imprimir tabla de variables después del parseo
         visitor.imprimirVariables();
 
-        // Imprimir tabla de variables después del parseo
+        visitor.imprimirConstantes();
+
         visitor.imprimirFunciones();
+
 
 
         // Imprimir los cuádruplos generados

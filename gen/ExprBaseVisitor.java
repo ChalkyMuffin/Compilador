@@ -10,7 +10,7 @@ import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
  * operations with no return type.
  */
 @SuppressWarnings("CheckReturnValue")
-public class ExprBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements ExprVisitor<T> {
+public abstract class ExprBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements ExprVisitor<T> {
 	/**
 	 * {@inheritDoc}
 	 *
@@ -32,6 +32,9 @@ public class ExprBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements E
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitVars_decl(ExprParser.Vars_declContext ctx) { return visitChildren(ctx); }
+
+	public abstract Void visitNumber(ExprParser.CteContext ctx);
+
 	/**
 	 * {@inheritDoc}
 	 *
@@ -172,6 +175,11 @@ public class ExprBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements E
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitRelExpr(ExprParser.RelExprContext ctx) { return visitChildren(ctx); }
+
+	public abstract Void visitConstanteEntero(ExprParser.IntConstContext ctx);
+
+	public abstract Void visitConstanteFloat(ExprParser.FloatConstContext ctx);
+
 	/**
 	 * {@inheritDoc}
 	 *
