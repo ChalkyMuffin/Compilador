@@ -165,6 +165,44 @@ public class MiVisitor extends ExprBaseVisitor<Void> {
         return null;
     }
 
+    @Override
+    public Void visitCondition(ExprParser.ConditionContext ctx) {
+        visit(ctx.expression());
+
+        String condicion = pilas.operandos.pop();
+        String tipoCond = pilas.tipos.pop();
+
+//        if (!tipoCond.equals("bool")) {
+//            throw new RuntimeException("Condición no booleana en if. Tipo = " + tipoCond);
+//        }
+
+        // Cuádruplo GOTOF con salto pendiente
+        pilas.agregarCuadruplo("GOTOF", condicion, "_", "pendiente");
+        pilas.saltos.push(pilas.listaCuadruplos().size() - 1);
+
+        // Cuerpo del if
+        visit(ctx.body(0));
+
+        if (ctx.body().size() > 1) {
+            // Hay else -> cuádruplo GOTO con salto pendiente
+            pilas.agregarCuadruplo("GOTO", "_", "_", "pendiente");
+            int falso = pilas.saltos.pop();
+            pilas.actualizarCuadruplo(falso, String.valueOf(pilas.listaCuadruplos().size()));
+            pilas.saltos.push(pilas.listaCuadruplos().size() - 1);
+
+            // Cuerpo del else
+            visit(ctx.body(1));
+
+            int fin = pilas.saltos.pop();
+            pilas.actualizarCuadruplo(fin, String.valueOf(pilas.listaCuadruplos().size()));
+        } else {
+            int falso = pilas.saltos.pop();
+            pilas.actualizarCuadruplo(falso, String.valueOf(pilas.listaCuadruplos().size()));
+        }
+
+        return null;
+    }
+
 
 
     public void generarCuadruplo() {

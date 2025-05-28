@@ -35,7 +35,7 @@ assign   : ID '=' expression ;
 
 condition: 'if' '(' expression ')' body ('else' body)? ;
 
-cycle    : 'while' '(' expression ')' 'do' body ;
+cycle    : 'while' '(' expression ')' body ;
 
 f_call   : ID '(' (expression (',' expression)*)? ')' ;
 

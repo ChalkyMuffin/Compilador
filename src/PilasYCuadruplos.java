@@ -24,4 +24,20 @@ public class PilasYCuadruplos {
     public String nuevoTemporal() {
         return "t" + (contadorTemp++);
     }
+    public Stack<Integer> saltos = new Stack<>();
+
+    // Permite acceso a un cuádruplo por índice (para hacer backpatch)
+    public List<List<String>> listaCuadruplos() {
+        return new ArrayList<>(cuadruplos);
+    }
+
+    // Sobrescribe un cuádruplo en cierto índice
+    public void actualizarCuadruplo(int index, String nuevoRes) {
+        List<List<String>> lista = new ArrayList<>(cuadruplos);
+        List<String> original = lista.get(index);
+        // Reemplaza el resultado
+        lista.set(index, Arrays.asList(original.get(0), original.get(1), original.get(2), nuevoRes));
+        cuadruplos = new LinkedList<>(lista); // Vuelve a guardar la cola
+    }
+
 }
