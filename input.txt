@@ -13,5 +13,12 @@ if (c > 0){
    c = c - a;
    print(c);
 }
+else{
+var p : int;
+p = 5;
+while (p < 10){
+print(p);
+}
+}
 
 }end;

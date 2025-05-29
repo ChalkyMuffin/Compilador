@@ -194,14 +194,50 @@ public class MiVisitor extends ExprBaseVisitor<Void> {
             visit(ctx.body(1));
 
             int fin = pilas.saltos.pop();
-            pilas.actualizarCuadruplo(fin, String.valueOf(pilas.listaCuadruplos().size()));
+            pilas.actualizarCuadruplo(fin, String.valueOf(pilas.listaCuadruplos().size() + 1));
         } else {
             int falso = pilas.saltos.pop();
-            pilas.actualizarCuadruplo(falso, String.valueOf(pilas.listaCuadruplos().size()));
+            pilas.actualizarCuadruplo(falso, String.valueOf(pilas.listaCuadruplos().size() + 1));
         }
 
         return null;
     }
+
+    @Override
+    public Void visitCycle(ExprParser.CycleContext ctx) {
+        // Paso 1: Marca el inicio del ciclo
+        int inicioCiclo = pilas.listaCuadruplos().size();
+
+        // Paso 2: Visita la expresión de la condición
+        visit(ctx.expression());
+
+        // Paso 3: Revisa tipo
+        String condicion = pilas.operandos.pop();
+        String tipoCond = pilas.tipos.pop();
+//        if (!tipoCond.equals("bool")) {
+//            throw new RuntimeException("Condición no booleana en ciclo while.");
+//        }
+
+        // Paso 4: Crea GOTOF con destino pendiente
+        pilas.agregarCuadruplo("GOTOF", condicion, "_", "pendiente");
+        pilas.saltos.push(pilas.listaCuadruplos().size() - 1);
+
+        // Paso 5: Visita el cuerpo del ciclo
+        visit(ctx.body());
+
+        // Paso 6: GOTO de regreso al inicio del ciclo
+        pilas.agregarCuadruplo("GOTO", "_", "_", String.valueOf(inicioCiclo));
+
+        // Paso 7: Backpatch del GOTOF
+        int falso = pilas.saltos.pop();
+        pilas.actualizarCuadruplo(falso, String.valueOf(pilas.listaCuadruplos().size()));
+
+        return null;
+    }
+
+
+
+
 
 
 

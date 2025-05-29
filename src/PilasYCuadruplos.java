@@ -15,10 +15,12 @@ public class PilasYCuadruplos {
     }
 
     public void imprimirCuadruplos() {
-        int i = 0;
+
+        int i = 1;
         for (List<String> cuad : cuadruplos) {
             System.out.printf("%02d: (%s, %s, %s, %s)%n", i++, cuad.get(0), cuad.get(1), cuad.get(2), cuad.get(3));
         }
+
     }
 
     public String nuevoTemporal() {
