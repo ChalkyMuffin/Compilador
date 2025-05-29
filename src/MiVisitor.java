@@ -1,5 +1,8 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+
 
 public class MiVisitor extends ExprBaseVisitor<Void> {
    //Tabla de variables
@@ -8,7 +11,7 @@ public class MiVisitor extends ExprBaseVisitor<Void> {
     @Override
     public Void visitVars_declGlobal(ExprParser.Vars_declGlobalContext ctx) {
         String tipo = ctx.type().getText();     // "int" o "float"
-        String nombre = ctx.ID().toString();     // nombre de variable
+        String nombre = ctx.ID().getText();     // nombre de variable
 
         tabla.declararVariableGlobal(nombre, tipo);
         return null;
@@ -17,7 +20,7 @@ public class MiVisitor extends ExprBaseVisitor<Void> {
     @Override
     public Void visitVars_decl(ExprParser.Vars_declContext ctx) {
         String tipo = ctx.type().getText();     // "int" o "float"
-        String nombre = ctx.ID().toString();     // nombre de variable
+        String nombre = ctx.ID().getText();     // nombre de variable
 
         tabla.declararVariableLocal(nombre, tipo);
         return null;
@@ -30,12 +33,14 @@ public class MiVisitor extends ExprBaseVisitor<Void> {
     }
 
     //Directorio de funciones
+    TablaVariables tablaVariablesActual = new TablaVariables();
     DirectorioFunciones dirFun = new DirectorioFunciones();
+
 
     @Override
     public Void visitFuncs_decl(ExprParser.Funcs_declContext ctx) {
         String nombreFuncion = ctx.ID().getText();
-        String tipoRetorno = "void";  // Según tu gramática
+        String tipoRetorno = "void";
 
         List<String> tiposParametros = new ArrayList<>();
         if (ctx.params() != null) {
@@ -44,14 +49,24 @@ public class MiVisitor extends ExprBaseVisitor<Void> {
             }
         }
 
-        int direccionInicio = 1000;  // Ejemplo fijo por ahora
+        int direccionInicio = pilas.cuadruplos.size();
 
-        dirFun.declararFuncion(nombreFuncion, tipoRetorno, tiposParametros, direccionInicio);
+        // 1. Cambia la tabla actual de variables
+        TablaVariables tablaTemporal = new TablaVariables();
+        tablaVariablesActual = tablaTemporal; // Asumimos que tienes un puntero actual
 
-        return visitChildren(ctx);
+        // 2. Visita hijos primero para llenar la tabla de variables locales
+        visitChildren(ctx);
 
+        // 3. Luego cuenta las variables ya insertadas
+        Map<String, Integer> conteo = tablaTemporal.contarVariablesPorTipo();
 
+        // 4. Finalmente, registra la función
+        dirFun.declararFuncion(nombreFuncion, tipoRetorno, tiposParametros, direccionInicio, conteo, tablaTemporal);
+
+        return null;
     }
+
     public void imprimirFunciones() {
         dirFun.imprimirFunciones();
     }

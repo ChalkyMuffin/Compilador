@@ -1,5 +1,4 @@
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 public class TablaVariables {
     // Clase interna para almacenar información de la variable
@@ -74,6 +73,27 @@ public class TablaVariables {
                     " | dirección: " + info.getDireccion() +
                     " | scope: " + scope);
         }
+    }
+
+    public Map<String, Integer> contarVariablesPorTipo() {
+        Map<String, Integer> conteo = new LinkedHashMap<>();
+        for (InfoVariable var : variables.values()) {
+            String tipo = var.getTipo();
+            if (!var.esGlobal()) { // Solo contar las locales
+                conteo.put(tipo, conteo.getOrDefault(tipo, 0) + 1);
+            }
+        }
+        return conteo;
+    }
+
+    public Map<String, InfoVariable> getVariablesLocales() {
+        Map<String, InfoVariable> locales = new LinkedHashMap<>();
+        for (Map.Entry<String, InfoVariable> entry : variables.entrySet()) {
+            if (!entry.getValue().esGlobal()) {
+                locales.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return locales;
     }
 
     // Método para obtener información de una variable
