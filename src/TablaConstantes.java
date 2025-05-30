@@ -35,7 +35,7 @@ public class TablaConstantes {
 
         InfoConstante info = new InfoConstante(valor, "int", dirConstanteInt++);
         constantes.put(clave, info);
-        System.out.println("Constante: " + valor + " | tipo: int | dirección: " + info.getDireccion());
+//        System.out.println("Constante: " + valor + " | tipo: int | dirección: " + info.getDireccion());
         return info.getDireccion();
     }
 
@@ -47,7 +47,7 @@ public class TablaConstantes {
 
         InfoConstante info = new InfoConstante(valor, "float", dirConstanteFloat++);
         constantes.put(clave, info);
-        System.out.println("Constante: " + valor + " | tipo: float | dirección: " + info.getDireccion());
+//        System.out.println("Constante: " + valor + " | tipo: float | dirección: " + info.getDireccion());
         return info.getDireccion();
     }
 
@@ -70,5 +70,14 @@ public class TablaConstantes {
     public Integer obtenerDireccion(String valor) {
         InfoConstante info = constantes.get(valor);
         return info != null ? info.getDireccion() : null;
+    }
+
+    public Object obtenerValorPorDireccion(int direccion) {
+        for (InfoConstante info : constantes.values()) {
+            if (info.getDireccion() == direccion) {
+                return info.getValor();
+            }
+        }
+        return null;
     }
 }

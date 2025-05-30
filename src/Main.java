@@ -19,16 +19,19 @@ public class Main {
         visitor.visit(tree);
 
         visitor.imprimirVariables();
-
         visitor.imprimirConstantes();
-
         visitor.imprimirFunciones();
-
-
 
         // Imprimir los cuádruplos generados
         System.out.println("\n=== CUÁDRUPLOS ===");
         pilas.imprimirCuadruplos();
 
+        // NUEVA PARTE: Ejecutar los cuádruplos
+        MaquinaVirtual mv = new MaquinaVirtual(
+                pilas.listaCuadruplos(),
+                visitor.tabla,
+                visitor.tablaConstantes
+        );
+        mv.ejecutar();
     }
 }

@@ -62,8 +62,8 @@ public class MiVisitor extends ExprBaseVisitor<Void> {
             for (ExprParser.ParamContext paramCtx : ctx.params().param()) {
                 String tipo = paramCtx.type().getText();
                 contadorTipos.put(tipo, contadorTipos.getOrDefault(tipo, 0) + 1);
-                System.out.println("Contador Tipos 1: " + contadorTipos);
-                System.out.println("Parametro - Tipo: " + tipo + ", Nombre: " + paramCtx.ID().getText());
+//                System.out.println("Contador Tipos 1: " + contadorTipos);
+//                System.out.println("Parametro - Tipo: " + tipo + ", Nombre: " + paramCtx.ID().getText());
             }
         }
 
@@ -73,8 +73,8 @@ public class MiVisitor extends ExprBaseVisitor<Void> {
                 String tipo = varsDeclCtx.type().getText();
                 String nombre = varsDeclCtx.ID().getText(); // Solo un ID por declaración
                 contadorTipos.put(tipo, contadorTipos.getOrDefault(tipo, 0) + 1);
-                System.out.println("Contador Tipos 2: " + contadorTipos);
-                System.out.println("Variable local - Tipo: " + tipo + ", Nombre: " + nombre);
+//                System.out.println("Contador Tipos 2: " + contadorTipos);
+//                System.out.println("Variable local - Tipo: " + tipo + ", Nombre: " + nombre);
             }
         }
 
@@ -88,7 +88,6 @@ public class MiVisitor extends ExprBaseVisitor<Void> {
 
         // 2. Visita hijos primero para llenar la tabla de variables locales
         visitChildren(ctx);
-        System.out.println("Hijos: "+ ctx);
 
         // 3. Luego cuenta las variables ya insertadas
         Map<String, Integer> conteo = tablaTemporal.contarVariablesPorTipo();
@@ -147,11 +146,36 @@ public class MiVisitor extends ExprBaseVisitor<Void> {
         if (ctx.ID() != null) {
             String id = ctx.ID().getText();
             pilas.operandos.push(id);
-            pilas.tipos.push("int"); // Asume tipo, o consulta tabla de variables
+
+            // Buscar el tipo real de la variable en la tabla
+            TablaVariables.InfoVariable info = tabla.obtenerVariable(id);
+            if (info != null) {
+                pilas.tipos.push(info.getTipo());
+            } else {
+                // Si no está en la tabla global, buscar en la tabla actual de funciones
+                if (tablaVariablesActual != null) {
+                    TablaVariables.InfoVariable infoLocal = tablaVariablesActual.obtenerVariable(id);
+                    if (infoLocal != null) {
+                        pilas.tipos.push(infoLocal.getTipo());
+                    } else {
+                        pilas.tipos.push("int"); // Tipo por defecto
+                    }
+                } else {
+                    pilas.tipos.push("int"); // Tipo por defecto
+                }
+            }
         } else if (ctx.expression() != null) {
             visit(ctx.expression());
         } else if (ctx.cte() != null) {
             visit(ctx.cte());
+        } else if (ctx.SUMA() != null || ctx.RESTA() != null) {
+            // Manejar operadores unarios + y -
+            String operador = ctx.getChild(0).getText();
+            if (operador.equals("+") || operador.equals("-")) {
+                pilas.operandos.push("0"); // Operando implícito para unario
+                pilas.tipos.push("int");
+                pilas.operadores.push(operador);
+            }
         }
         return null;
     }
@@ -161,12 +185,19 @@ public class MiVisitor extends ExprBaseVisitor<Void> {
         visit(ctx.term(0)); // Visita el primer término
 
         if (ctx.term().size() > 1) {
-            visit(ctx.term(1)); // Visita el segundo término
+            // Buscar el operador correctamente
+            String operador = null;
+            if (ctx.SUMA() != null) {
+                operador = "+";
+            } else if (ctx.RESTA() != null) {
+                operador = "-";
+            }
 
-            String operador = ctx.getChild(1).getText(); // Puede ser '+' o '-'
-            pilas.operadores.push(operador);
-
-            generarCuadruplo();
+            if (operador != null) {
+                pilas.operadores.push(operador);
+                visit(ctx.term(1)); // Visita el segundo término
+                generarCuadruplo();
+            }
         }
 
         return null;
@@ -307,6 +338,29 @@ public class MiVisitor extends ExprBaseVisitor<Void> {
 
             pilas.agregarCuadruplo(operador, izq, der, temp);
         }
+    }
+
+
+    @Override
+    public Void visitPrintStat(ExprParser.PrintStatContext ctx) {
+        // Visita la expresión dentro del print
+        visit(ctx.printExpr());
+        return null;
+    }
+
+    @Override
+    public Void visitPrintExpr(ExprParser.PrintExprContext ctx) {
+        // Visita la expresión que se va a imprimir
+        visit(ctx.expression());
+
+        // Obtén el resultado de la expresión de las pilas
+        String argumento = pilas.operandos.pop();
+        pilas.tipos.pop(); // También quita el tipo
+
+        // Genera el cuádruplo de PRINT
+        pilas.agregarCuadruplo("PRINT", argumento, "_", "_");
+
+        return null;
     }
 
 
