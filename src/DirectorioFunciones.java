@@ -15,15 +15,13 @@ public class DirectorioFunciones {
         private final TablaVariables tablaVariablesLocales;
         private final HashMap conteoTipos;
         String tipoRetorno;
-        List<String> tiposParametros;
         int direccionInicio;
         Map<String, Integer> conteoVariables; // por tipo
         TablaVariables tablaVariables;
 
-        public FuncionInfo(String tipoRetorno, List<String> tiposParametros, int direccionInicio,
+        public FuncionInfo(String tipoRetorno,  int direccionInicio,
                            Map<String, Integer> conteoVariables, TablaVariables tablaVariables) {
             this.tipoRetorno = tipoRetorno;
-            this.tiposParametros = tiposParametros;
             this.direccionInicio = direccionInicio;
             this.conteoVariables = conteoVariables;
             this.tablaVariables = tablaVariables;
@@ -42,7 +40,6 @@ public class DirectorioFunciones {
         @Override
         public String toString() {
             return "Tipo: " + tipoRetorno +
-                    ", Parámetros: " + tiposParametros +
                     ", Dirección Inicio: " + direccionInicio +
                     ", Memoria: " + conteoVariables;
         }
@@ -50,12 +47,12 @@ public class DirectorioFunciones {
 
     private static Map<String, FuncionInfo> funciones = new LinkedHashMap<>();
 
-    public void declararFuncion(String nombre, String tipoRetorno, List<String> tiposParametros,
+    public void declararFuncion(String nombre, String tipoRetorno,
                                 int dirInicio, Map<String, Integer> conteoVars, TablaVariables tablaVars) {
         if (funciones.containsKey(nombre)) {
             System.out.println("Error: la función '" + nombre + "' ya fue declarada.");
         } else {
-            funciones.put(nombre, new FuncionInfo(tipoRetorno, tiposParametros, dirInicio, conteoVars, tablaVars));
+            funciones.put(nombre, new FuncionInfo(tipoRetorno, dirInicio, conteoVars, tablaVars));
 
         }
     }

@@ -95,7 +95,7 @@ public class MiVisitor extends ExprBaseVisitor<Void> {
 
         // 4. Finalmente, registra la función
         dirFun.actualizarFuncion(nombreFuncion, conteo, tablaTemporal);
-        dirFun.declararFuncion(nombreFuncion, tipoRetorno, tiposParametros, direccionInicio, contadorTipos, tablaTemporal);
+        dirFun.declararFuncion(nombreFuncion, tipoRetorno, direccionInicio, contadorTipos, tablaTemporal);
 
         return null;
     }
