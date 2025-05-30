@@ -194,21 +194,12 @@ public class MaquinaVirtual {
 
     private Object obtenerConstantePorDireccion(int direccion) {
         if (tablaConstantes != null) {
+
             return tablaConstantes.obtenerValorPorDireccion(direccion);
+
         }
 
-        // Fallback para valores comunes
-        Map<Integer, Object> constantesTemp = Map.of(
-                20000, 3,
-                20001, 18,
-                20002, 20,
-                20003, 0,
-                20004, 5,
-                20005, 10,
-                20500, 5.14f
-        );
-
-        return constantesTemp.getOrDefault(direccion, 0);
+        return null;
     }
 
     private double convertirANumero(Object valor) {

@@ -1,12 +1,10 @@
-import org.antlr.v4.runtime.tree.TerminalNode;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
 
-public class MiVisitor extends ExprBaseVisitor<Void> {
+public class MiParser extends ExprBaseVisitor<Void> {
    //Tabla de variables
     TablaVariables tabla = new TablaVariables();
 
@@ -115,7 +113,7 @@ public class MiVisitor extends ExprBaseVisitor<Void> {
     //Cuadruplos
     PilasYCuadruplos pilas;
 
-    public MiVisitor(PilasYCuadruplos pilas) {
+    public MiParser(PilasYCuadruplos pilas) {
         this.pilas = pilas;
     }
 

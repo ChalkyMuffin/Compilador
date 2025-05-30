@@ -15,7 +15,7 @@ public class Main {
         ParseTree tree = parser.prog(); // o la regla raíz que tengas
 
         PilasYCuadruplos pilas = new PilasYCuadruplos();
-        MiVisitor visitor = new MiVisitor(pilas);
+        MiParser visitor = new MiParser(pilas);
         visitor.visit(tree);
 
         visitor.imprimirVariables();
