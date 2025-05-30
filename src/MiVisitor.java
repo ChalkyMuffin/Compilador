@@ -1,3 +1,5 @@
+import org.antlr.v4.runtime.tree.TerminalNode;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +28,15 @@ public class MiVisitor extends ExprBaseVisitor<Void> {
         return null;
     }
 
+    @Override
+    public Void visitParam(ExprParser.ParamContext ctx) {
+        String tipo = ctx.type().getText();     // "int" o "float"
+        String nombre = ctx.ID().getText();     // nombre de variable
+
+        tabla.declararVariableLocal(nombre, tipo);
+        return null;
+    }
+
 
 
     public void imprimirVariables() {
@@ -43,11 +54,31 @@ public class MiVisitor extends ExprBaseVisitor<Void> {
         String tipoRetorno = "void";
 
         List<String> tiposParametros = new ArrayList<>();
+        // Contador de tipos
+        Map<String, Integer> contadorTipos = new HashMap<>();
+
+// 1. Contar tipos de parámetros
         if (ctx.params() != null) {
             for (ExprParser.ParamContext paramCtx : ctx.params().param()) {
-                tiposParametros.add(paramCtx.type().getText());
+                String tipo = paramCtx.type().getText();
+                contadorTipos.put(tipo, contadorTipos.getOrDefault(tipo, 0) + 1);
+                System.out.println("Contador Tipos 1: " + contadorTipos);
+                System.out.println("Parametro - Tipo: " + tipo + ", Nombre: " + paramCtx.ID().getText());
             }
         }
+
+// 2. Contar tipos de variables locales
+        if (ctx.vars_decl() != null) {
+            for (ExprParser.Vars_declContext varsDeclCtx : ctx.vars_decl()) {
+                String tipo = varsDeclCtx.type().getText();
+                String nombre = varsDeclCtx.ID().getText(); // Solo un ID por declaración
+                contadorTipos.put(tipo, contadorTipos.getOrDefault(tipo, 0) + 1);
+                System.out.println("Contador Tipos 2: " + contadorTipos);
+                System.out.println("Variable local - Tipo: " + tipo + ", Nombre: " + nombre);
+            }
+        }
+
+
 
         int direccionInicio = pilas.cuadruplos.size();
 
@@ -57,12 +88,14 @@ public class MiVisitor extends ExprBaseVisitor<Void> {
 
         // 2. Visita hijos primero para llenar la tabla de variables locales
         visitChildren(ctx);
+        System.out.println("Hijos: "+ ctx);
 
         // 3. Luego cuenta las variables ya insertadas
         Map<String, Integer> conteo = tablaTemporal.contarVariablesPorTipo();
 
         // 4. Finalmente, registra la función
-        dirFun.declararFuncion(nombreFuncion, tipoRetorno, tiposParametros, direccionInicio, conteo, tablaTemporal);
+        dirFun.actualizarFuncion(nombreFuncion, conteo, tablaTemporal);
+        dirFun.declararFuncion(nombreFuncion, tipoRetorno, tiposParametros, direccionInicio, contadorTipos, tablaTemporal);
 
         return null;
     }

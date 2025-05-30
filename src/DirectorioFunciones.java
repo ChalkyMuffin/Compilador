@@ -44,7 +44,7 @@ public class DirectorioFunciones {
             return "Tipo: " + tipoRetorno +
                     ", Parámetros: " + tiposParametros +
                     ", Dirección Inicio: " + direccionInicio +
-                    ", Variables: " + conteoVariables;
+                    ", Memoria: " + conteoVariables;
         }
     }
 

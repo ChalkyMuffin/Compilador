@@ -5,8 +5,8 @@ var d : int;
 void ejemploFuncion(fun:int, unfun:float)
 [var a : int;
 var b : float;
-{a = 3 * 2;
-b = 5.14;
+{a = 3 * fun;
+b = 5.14 + unfun;
 print(b);
 
 }];
