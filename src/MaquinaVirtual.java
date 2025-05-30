@@ -1,7 +1,9 @@
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.List;
 
 public class MaquinaVirtual {
-    private Map<String, Object> memoria = new HashMap<String, Object>();
+    private Map<String, Object> memoria = new HashMap<>();
     private List<List<String>> cuadruplos;
     private int punteroInstruccion = 0;
     private TablaVariables tablaVariables;
