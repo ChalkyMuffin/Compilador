@@ -5,6 +5,34 @@ import java.util.HashMap;
 
 
 public class MiParser extends ExprBaseVisitor<Void> {
+
+    @Override
+    public Void visitProg(ExprParser.ProgContext ctx) {
+        // PRIMER cuádruplo: GOTO hacia main (con dirección pendiente)
+        pilas.agregarCuadruplo("GOTO", "main", "_", "pendiente");
+        int indiceGotoMain = pilas.cuadruplos.size() - 1; // Guardar índice para backpatch
+        pilas.saltos.push(indiceGotoMain); // Guardar en pila de saltos
+
+        // Continuar con el procesamiento normal del programa
+        return visitChildren(ctx);
+    }
+
+    @Override
+    public Void visitMainBody(ExprParser.MainBodyContext ctx) {
+        // La dirección actual es donde inicia el main
+        int direccionMain = pilas.cuadruplos.size() + 1;
+
+        // Hacer backpatch del GOTO inicial
+        if (!pilas.saltos.isEmpty()) {
+            int indiceGoto = pilas.saltos.pop();
+            pilas.actualizarCuadruplo(indiceGoto, String.valueOf(direccionMain));
+        }
+
+        // Procesar el cuerpo del main
+        visit(ctx.body());
+
+        return null;
+    }
     //Tabla de variables
     TablaVariables tabla = new TablaVariables();
 
@@ -291,16 +319,16 @@ public class MiParser extends ExprBaseVisitor<Void> {
         return null;
     }
 
-    @Override
-    public Void visitMainBody(ExprParser.MainBodyContext ctx) {
-
-        pilas.agregarCuadruplo("GOTO", "main", "_", "pendiente");
-        int mainDir = pilas.cuadruplos.size();
-
-
-
-        return null;
-    }
+//    @Override
+//    public Void visitMainBody(ExprParser.MainBodyContext ctx) {
+//
+//        pilas.agregarCuadruplo("GOTO", "main", "_", "pendiente");
+//        int mainDir = pilas.cuadruplos.size();
+//
+//
+//
+//        return null;
+//    }
 
 
     //If

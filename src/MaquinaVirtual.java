@@ -68,10 +68,20 @@ public class MaquinaVirtual {
 
     private void param(String valor, String indiceParam) {
         Object valorParametro = obtenerValor(valor);
-        int indice = Integer.parseInt(indiceParam);
+       System.out.println("Valor: " + obtenerValor(valor));
 
-        System.out.println("  PARAM " + indice + ": " + valorParametro);
-        parametrosActuales.put("param_" + indice, valorParametro);
+
+            System.out.println("  PARAM " + indiceParam + ": " + valorParametro);
+            parametrosActuales.put("param_" + indiceParam, valorParametro);
+
+
+
+
+
+//        int indice = Integer.parseInt(indiceParam);
+//
+//        System.out.println("  PARAM " + indice + ": " + valorParametro);
+//        parametrosActuales.put("param_" + indice, valorParametro);
     }
 
     private void gosub(String nombreFuncion) {
@@ -79,11 +89,13 @@ public class MaquinaVirtual {
 
         // Guardar dirección de retorno
         pilaRetorno.push(punteroInstruccion + 1);
+        System.out.println("Puntero retorno = " + punteroInstruccion + 1);
 
         // Buscar dirección de inicio de la función
         // Aquí necesitarías acceso al DirectorioFunciones
         // Por simplicidad, buscaremos la función por nombre en los cuádruplos
-        int direccionFuncion = buscarDireccionFuncion(nombreFuncion);
+        DirectorioFunciones dirFun = new DirectorioFunciones();
+        int direccionFuncion = dirFun.getDireccionInicio(nombreFuncion);
 
         if (direccionFuncion != -1) {
             // Inicializar parámetros en memoria local
@@ -218,7 +230,7 @@ public class MaquinaVirtual {
                     continue; // No incrementar puntero aquí
                 case "ENDFUNC":
                     endfunc();
-                    break; // No incrementar puntero aquí
+                    continue; // No incrementar puntero aquí
                 default:
                     System.err.println("Operación no reconocida: " + operacion);
             }

@@ -11,6 +11,8 @@ public class DirectorioFunciones {
         return null;
     }
 
+
+
     public static class FuncionInfo {
         private final TablaVariables tablaVariablesLocales;
         String tipoRetorno;
@@ -28,6 +30,7 @@ public class DirectorioFunciones {
             this.tablaVariables = tablaVariables;
             this.tablaVariablesLocales = tablaVariables; // También guarda como locales
         }
+
 
         public TablaVariables getTablaVariablesLocales(String nombreFuncion) {
             FuncionInfo info = funciones.get(nombreFuncion);
@@ -78,6 +81,12 @@ public class DirectorioFunciones {
             info.conteoVariables = conteoVars;
             info.tablaVariables = tablaVars;
         }
+    }
+
+    public int getDireccionInicio(String nombre){
+        FuncionInfo info = funciones.get(nombre);
+        return info.direccionInicio;
+
     }
 
 
