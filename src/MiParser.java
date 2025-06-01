@@ -351,7 +351,7 @@ public class MiParser extends ExprBaseVisitor<Void> {
             pilas.agregarCuadruplo("GOTO", "_", "_", "pendiente");
             int falso = pilas.saltos.pop();
             pilas.actualizarCuadruplo(falso, String.valueOf(pilas.listaCuadruplos().size()));
-            pilas.saltos.push(pilas.listaCuadruplos().size() - 1);
+            pilas.saltos.push(pilas.listaCuadruplos().size() -1);
 
             // Cuerpo del else
             visit(ctx.body(1));
@@ -384,7 +384,7 @@ public class MiParser extends ExprBaseVisitor<Void> {
         visit(ctx.body());
 
         // GOTOF de regreso al inicio del ciclo
-        pilas.agregarCuadruplo("GOTO", "_", "_", String.valueOf(inicioCiclo));
+        pilas.agregarCuadruplo("GOTO", "_", "_", String.valueOf(inicioCiclo + 1));
 
         // Backpatch del GOTOF
         int falso = pilas.saltos.pop();

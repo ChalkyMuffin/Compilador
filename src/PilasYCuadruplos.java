@@ -23,6 +23,20 @@ public class PilasYCuadruplos {
 
     }
 
+    public String imprimirParametroCuadruplo(int numCuadruplo, int indiceParametro) {
+        if (numCuadruplo < 1 || indiceParametro < 0 || indiceParametro > 3) {
+            throw new IllegalArgumentException("Índices fuera de rango.");
+        }
+
+        List<List<String>> lista = new ArrayList<>(cuadruplos);
+        if (numCuadruplo > lista.size()) {
+            throw new IllegalArgumentException("Número de cuádruplo fuera de rango.");
+        }
+
+        List<String> cuadruplo = lista.get(numCuadruplo - 1); // -1 porque empiezas a imprimir desde 1
+        return cuadruplo.get(indiceParametro);
+    }
+
     public String nuevoTemporal() {
         return "t" + (contadorTemp++);
     }

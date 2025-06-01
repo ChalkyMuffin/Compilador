@@ -15,21 +15,21 @@ print(a + b);
 
 main {
 e = 3.14;
-c = 1;
+c = 0;
 d = 20;
 if (c > 0){
    c = c - a;
    ejemploFuncion(c + d ,e);
    print(c);
+
+   ejemploFuncion(c ,e);
 }
 else{
 var p : int;
-var m : int;
 p = 8;
-m = 1;
 while (p < 10){
 print(p);
-p = p + m;
+p = p + 1;
 
 }
 }

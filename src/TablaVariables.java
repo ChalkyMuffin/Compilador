@@ -75,6 +75,34 @@ public class TablaVariables {
         }
     }
 
+    public int obtenerUltimaDireccionLocalFloat() {
+        int ultimaDireccion = 13000; // Dirección base para variables locales float
+
+        for (InfoVariable var : variables.values()) {
+            if (!var.esGlobal() && var.getTipo().equals("float")) {
+                if (var.getDireccion() >= ultimaDireccion) {
+                    ultimaDireccion = var.getDireccion() + 1;
+                }
+            }
+        }
+
+        return ultimaDireccion;
+    }
+
+    public int obtenerUltimaDireccionLocalInt() {
+        int ultimaDireccion = 11000; // Dirección base para variables locales int
+
+        for (InfoVariable var : variables.values()) {
+            if (!var.esGlobal() && var.getTipo().equals("int")) {
+                if (var.getDireccion() >= ultimaDireccion) {
+                    ultimaDireccion = var.getDireccion() + 1;
+                }
+            }
+        }
+
+        return ultimaDireccion;
+    }
+
     public void imprimirVariables() {
         System.out.println("=== Tabla de Variables ===");
         for (Map.Entry<String, InfoVariable> entrada : variables.entrySet()) {
