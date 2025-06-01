@@ -3,20 +3,20 @@ import java.util.*;
 public class TablaVariables {
     // Clase interna para almacenar información de la variable
     public static class InfoVariable {
-//        private String nombre;
+        private String nombre;
         private String tipo;
         public int direccion;
         private boolean esGlobal;
 
         public InfoVariable(String nombre, String tipo, int direccion, boolean esGlobal) {
-//            this.nombre = nombre;
+            this.nombre = nombre;
             this.tipo = tipo;
             this.direccion = direccion;
             this.esGlobal = esGlobal;
         }
 
         // Getters
-//        public String getNombre() { return nombre; }
+        public String getNombre() { return nombre; }
         public String getTipo() { return tipo; }
         public int getDireccion() { return direccion; }
         public boolean esGlobal() { return esGlobal; }
@@ -42,13 +42,13 @@ public class TablaVariables {
         if (variables.containsKey(nombre)) {
             System.out.println("Error: variable '" + nombre + "' ya fue declarada.");
         } else {
-            int direccion = asignarDireccion( tipo, esGlobal);
+            int direccion = asignarDireccion( nombre, tipo, esGlobal);
             InfoVariable info = new InfoVariable(nombre, tipo, direccion, esGlobal);
             variables.put(nombre, info);
         }
     }
 
-    public int asignarDireccion( String tipo, boolean esGlobal) {
+    public int asignarDireccion(String nombre, String tipo, boolean esGlobal) {
         if (esGlobal) {
             if (tipo.equals("int")) {
                 return dirGlobalInt++;
@@ -101,6 +101,7 @@ public class TablaVariables {
         Map<String, InfoVariable> locales = new LinkedHashMap<>();
         for (Map.Entry<String, InfoVariable> entry : variables.entrySet()) {
             if (!entry.getValue().esGlobal()) {
+                System.out.println("Variables locales2: " + entry.getKey() + " "+ entry.getValue());
                 locales.put(entry.getKey(), entry.getValue());
             }
         }

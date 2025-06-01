@@ -160,7 +160,10 @@ public class MaquinaVirtual {
 //            i++;
             Object valor = param.getValue();
 //            System.out.println("i = " + i);
-            System.out.println("Tamaño de parametro: " + valor);
+            System.out.println("************************************************************");
+            System.out.println("Datos del parametro: " + param.getKey() + " " + param.getValue());
+            System.out.println("Variables locales: " + tablaVariables.getVariablesLocales());
+            System.out.println("************************************************************");
 
             if (valor instanceof Integer) {
                 memoriaLocalInt.put(direccionParam , valor);

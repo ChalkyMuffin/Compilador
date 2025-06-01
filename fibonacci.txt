@@ -1,0 +1,26 @@
+program fibo;
+
+var n : int;
+var a : int;
+var b : int;
+var temp : int;
+var i : int;
+
+
+main {
+    n = 7;
+
+    a = 0;
+    b = 1;
+    i = 2;
+
+    while (i < n) {
+        temp = a + b;
+        a = b;
+        b = temp;
+        i = i + 1;
+    }
+
+    print(b);
+}
+end
