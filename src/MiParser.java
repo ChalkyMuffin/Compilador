@@ -101,6 +101,15 @@ public class MiParser extends ExprBaseVisitor<Void> {
         dirFun.imprimirFunciones();
     }
 
+    @Override
+    public Void visitF_call(ExprParser.F_callContext ctx) {
+        visit(ctx.expression());
+
+
+
+        return null;
+    }
+
     TablaConstantes tablaConstantes = new TablaConstantes();
 
 
