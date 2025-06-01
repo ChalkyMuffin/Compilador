@@ -15,13 +15,15 @@ public class DirectorioFunciones {
         private final TablaVariables tablaVariablesLocales;
         String tipoRetorno;
         int direccionInicio;
+        int direccionLlamada;
         Map<String, Integer> conteoVariables; // por tipo
         TablaVariables tablaVariables;
 
-        public FuncionInfo(String tipoRetorno,  int direccionInicio,
+        public FuncionInfo(String tipoRetorno,  int direccionInicio,  int direccionLlamada,
                            Map<String, Integer> conteoVariables, TablaVariables tablaVariables) {
             this.tipoRetorno = tipoRetorno;
             this.direccionInicio = direccionInicio;
+            this.direccionLlamada = direccionLlamada;
             this.conteoVariables = conteoVariables;
             this.tablaVariables = tablaVariables;
             this.tablaVariablesLocales = tablaVariables; // También guarda como locales
@@ -39,6 +41,7 @@ public class DirectorioFunciones {
         public String toString() {
             return "Tipo: " + tipoRetorno +
                     ", Dirección Inicio: " + direccionInicio +
+                    ", Dirección Llamada: " + direccionLlamada +
                     ", Memoria: " + conteoVariables;
         }
     }
@@ -46,19 +49,19 @@ public class DirectorioFunciones {
     private static Map<String, FuncionInfo> funciones = new LinkedHashMap<>();
 
     public void declararFuncion(String nombre, String tipoRetorno,
-                                int dirInicio, Map<String, Integer> conteoVars, TablaVariables tablaVars) {
+                                int dirInicio, int dirDeclaracion, Map<String, Integer> conteoVars, TablaVariables tablaVars) {
         if (funciones.containsKey(nombre)) {
             System.out.println("Error: la función '" + nombre + "' ya fue declarada.");
         } else {
-            funciones.put(nombre, new FuncionInfo(tipoRetorno, dirInicio, conteoVars, tablaVars));
+            funciones.put(nombre, new FuncionInfo(tipoRetorno, dirInicio, dirDeclaracion, conteoVars, tablaVars));
 
         }
     }
 
-    public void actualizardirInicio(String nombre, int nuevaDirInicio) {
+    public void actualizardirLlamada(String nombre, int nuevaDirLlamada) {
         FuncionInfo info = funciones.get(nombre);
         if (info != null) {
-            info.direccionInicio = nuevaDirInicio;
+            info.direccionLlamada = nuevaDirLlamada;
         }
     }
 

@@ -72,6 +72,7 @@ public class MiParser extends ExprBaseVisitor<Void> {
         }
 
         int direccionInicio = pilas.cuadruplos.size() + 1; // +1 porque será la siguiente instrucción
+        int direccionLlamada = direccionInicio;
 
         // Cambiar tabla actual de variables
         TablaVariables tablaTemporal = new TablaVariables();
@@ -86,7 +87,7 @@ public class MiParser extends ExprBaseVisitor<Void> {
         // Contar variables ya insertadas y registrar función
         Map<String, Integer> conteo = tablaTemporal.contarVariablesPorTipo();
         dirFun.actualizarFuncion(nombreFuncion, conteo, tablaTemporal);
-        dirFun.declararFuncion(nombreFuncion, tipoRetorno, direccionInicio, contadorTipos, tablaTemporal);
+        dirFun.declararFuncion(nombreFuncion, tipoRetorno, direccionInicio, direccionLlamada, contadorTipos, tablaTemporal);
 
         return null;
     }
@@ -101,7 +102,7 @@ public class MiParser extends ExprBaseVisitor<Void> {
         // 1. Generar ERA (Espacio en Registro de Activación)
         pilas.agregarCuadruplo("ERA", nombreFuncion, "_", "_");
 //        System.out.println( "Cuadruplo size: " + pilas.cuadruplos.size());
-        dirFun.actualizardirInicio(nombreFuncion, pilas.cuadruplos.size());
+        dirFun.actualizardirLlamada(nombreFuncion, pilas.cuadruplos.size());
 
 
         // 2. Evaluar parámetros y generar PARAM
