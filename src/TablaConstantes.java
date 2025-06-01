@@ -72,4 +72,14 @@ public class TablaConstantes {
         }
         return null;
     }
+
+    public Integer obtenerDireccionPorValor(String valor) {
+        InfoConstante constante = constantes.get(valor);
+        if (constante != null) {
+            return constante.getDireccion();
+        } else {
+            System.out.println("Error: constante '" + valor + "' no encontrada.");
+            return null;
+        }
+    }
 }

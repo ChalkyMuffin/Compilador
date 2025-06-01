@@ -45,7 +45,7 @@ public class MaquinaVirtual {
                 } else if (direccion >= 11000 && direccion < 13000) {
                     memoriaLocalInt.put(direccion, 0);
                 } else if (direccion >= 13000 && direccion < 20000) {
-                    memoriaLocalFloat.put(direccion, 0.0f);
+                    memoriaLocalFloat.put(direccion, 0);
                 }
             }
         }
@@ -68,11 +68,11 @@ public class MaquinaVirtual {
 
     private void param(String valor, String indiceParam) {
         Object valorParametro = obtenerValor(valor);
-       System.out.println("Valor: " + obtenerValor(valor));
+        System.out.println("Valor: " + obtenerValor(valor));
 
 
-            System.out.println("  PARAM " + indiceParam + ": " + valorParametro);
-            parametrosActuales.put("param_" + indiceParam, valorParametro);
+        System.out.println("  PARAM " + indiceParam + ": " + valorParametro);
+        parametrosActuales.put("param_" + indiceParam, valorParametro);
 
 
 
@@ -149,17 +149,25 @@ public class MaquinaVirtual {
         return -1;
     }
 
+    //Parametros para funciones
     private void inicializarParametros(String nombreFuncion) {
         // Inicializar parámetros en memoria local
         // Esta es una implementación básica
         int direccionParam = 11000; // Empezar en direcciones locales
 
+//        int i = 0;
         for (Map.Entry<String, Object> param : parametrosActuales.entrySet()) {
+//            i++;
             Object valor = param.getValue();
+//            System.out.println("i = " + i);
+            System.out.println("Tamaño de parametro: " + valor);
 
             if (valor instanceof Integer) {
-                memoriaLocalInt.put(direccionParam, valor);
-            } else if (valor instanceof Float) {
+                memoriaLocalInt.put(direccionParam , valor);
+            } else {
+//                direccionParam = tablaVariables.obtenerDireccion(nombreFuncion);
+                direccionParam = 13000;
+//                System.out.println("Direccion siguiente float: " + valor);
                 memoriaLocalFloat.put(direccionParam, valor);
             }
 

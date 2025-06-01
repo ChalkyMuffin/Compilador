@@ -3,17 +3,20 @@ import java.util.*;
 public class TablaVariables {
     // Clase interna para almacenar información de la variable
     public static class InfoVariable {
+//        private String nombre;
         private String tipo;
-        private int direccion;
+        public int direccion;
         private boolean esGlobal;
 
-        public InfoVariable(String tipo, int direccion, boolean esGlobal) {
+        public InfoVariable(String nombre, String tipo, int direccion, boolean esGlobal) {
+//            this.nombre = nombre;
             this.tipo = tipo;
             this.direccion = direccion;
             this.esGlobal = esGlobal;
         }
 
         // Getters
+//        public String getNombre() { return nombre; }
         public String getTipo() { return tipo; }
         public int getDireccion() { return direccion; }
         public boolean esGlobal() { return esGlobal; }
@@ -39,13 +42,13 @@ public class TablaVariables {
         if (variables.containsKey(nombre)) {
             System.out.println("Error: variable '" + nombre + "' ya fue declarada.");
         } else {
-            int direccion = asignarDireccion(tipo, esGlobal);
-            InfoVariable info = new InfoVariable(tipo, direccion, esGlobal);
+            int direccion = asignarDireccion( tipo, esGlobal);
+            InfoVariable info = new InfoVariable(nombre, tipo, direccion, esGlobal);
             variables.put(nombre, info);
         }
     }
 
-    private int asignarDireccion(String tipo, boolean esGlobal) {
+    public int asignarDireccion( String tipo, boolean esGlobal) {
         if (esGlobal) {
             if (tipo.equals("int")) {
                 return dirGlobalInt++;
@@ -60,6 +63,16 @@ public class TablaVariables {
             }
         }
         throw new IllegalArgumentException("Tipo no soportado: " + tipo);
+    }
+
+    public Integer obtenerDireccion(String nombre) {
+        InfoVariable variable = variables.get(nombre);
+        if (variable != null) {
+            return variable.getDireccion();
+        } else {
+            System.out.println("Error: variable '" + nombre + "' no encontrada.");
+            return null;
+        }
     }
 
     public void imprimirVariables() {
