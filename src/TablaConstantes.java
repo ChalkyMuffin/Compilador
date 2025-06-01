@@ -61,16 +61,8 @@ public class TablaConstantes {
         }
     }
 
-    // Método para obtener información de una constante
-    public InfoConstante obtenerConstante(String valor) {
-        return constantes.get(valor);
-    }
 
-    // Método para obtener dirección de una constante por su valor
-    public Integer obtenerDireccion(String valor) {
-        InfoConstante info = constantes.get(valor);
-        return info != null ? info.getDireccion() : null;
-    }
+
 
     public Object obtenerValorPorDireccion(int direccion) {
         for (InfoConstante info : constantes.values()) {

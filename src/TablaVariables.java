@@ -42,8 +42,6 @@ public class TablaVariables {
             int direccion = asignarDireccion(tipo, esGlobal);
             InfoVariable info = new InfoVariable(tipo, direccion, esGlobal);
             variables.put(nombre, info);
-
-
         }
     }
 
@@ -99,5 +97,10 @@ public class TablaVariables {
     // Método para obtener información de una variable
     public InfoVariable obtenerVariable(String nombre) {
         return variables.get(nombre);
+    }
+
+    // NUEVO: Método para obtener todas las variables (necesario para la MaquinaVirtual)
+    public Map<String, InfoVariable> obtenerTodasLasVariables() {
+        return new LinkedHashMap<>(variables);
     }
 }

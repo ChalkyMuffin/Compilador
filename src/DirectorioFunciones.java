@@ -13,7 +13,6 @@ public class DirectorioFunciones {
 
     public static class FuncionInfo {
         private final TablaVariables tablaVariablesLocales;
-        private final HashMap conteoTipos;
         String tipoRetorno;
         int direccionInicio;
         Map<String, Integer> conteoVariables; // por tipo
@@ -26,7 +25,6 @@ public class DirectorioFunciones {
             this.conteoVariables = conteoVariables;
             this.tablaVariables = tablaVariables;
             this.tablaVariablesLocales = tablaVariables; // También guarda como locales
-            this.conteoTipos = new HashMap(); // opcional o lo puedes eliminar
         }
 
         public TablaVariables getTablaVariablesLocales(String nombreFuncion) {

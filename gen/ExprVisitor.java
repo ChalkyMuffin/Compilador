@@ -139,13 +139,6 @@ public interface ExprVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitMulExpr(ExprParser.MulExprContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code factorExpr}
-	 * labeled alternative in {@link ExprParser#term}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitFactorExpr(ExprParser.FactorExprContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link ExprParser#factor}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

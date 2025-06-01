@@ -26,7 +26,7 @@ public class Main {
         System.out.println("\n=== CUÁDRUPLOS ===");
         pilas.imprimirCuadruplos();
 
-        // NUEVA PARTE: Ejecutar los cuádruplos
+        // Ejecutar los cuádruplos
         MaquinaVirtual mv = new MaquinaVirtual(
                 pilas.listaCuadruplos(),
                 visitor.tabla,

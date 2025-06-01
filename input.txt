@@ -5,14 +5,14 @@ var d : int;
 void ejemploFuncion(fun:int, unfun:float)
 [var a : int;
 var b : float;
-{a = 3 * fun;
+{a = 3;
 b = 5.14 + unfun;
-print(b);
+print(a + b);
 
 }];
 
 main {
-c = 1;
+c = 0;
 d = 20;
 if (c > 0){
    c = c - a;
@@ -21,10 +21,12 @@ if (c > 0){
 }
 else{
 var p : int;
-p = 10;
+var m : int;
+p = 8;
+m = 1;
 while (p < 10){
 print(p);
-p = p + 1;
+p = p + m;
 
 }
 }

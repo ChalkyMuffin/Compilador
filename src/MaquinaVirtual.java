@@ -3,7 +3,13 @@ import java.util.Map;
 import java.util.List;
 
 public class MaquinaVirtual {
-    private Map<String, Object> memoria = new HashMap<>();
+    // Memoria dividida por tipos y rangos
+    private Map<Integer, Object> memoriaGlobalInt = new HashMap<>();     // 5000-7999
+    private Map<Integer, Object> memoriaGlobalFloat = new HashMap<>();   // 8000-10999
+    private Map<Integer, Object> memoriaLocalInt = new HashMap<>();      // 11000-12999
+    private Map<Integer, Object> memoriaLocalFloat = new HashMap<>();    // 13000-19999
+    private Map<String, Object> memoriaTemporales = new HashMap<>();     // t1, t2, etc.
+
     private List<List<String>> cuadruplos;
     private int punteroInstruccion = 0;
     private TablaVariables tablaVariables;
@@ -17,9 +23,26 @@ public class MaquinaVirtual {
     }
 
     private void inicializarMemoria() {
-        // Inicializar variables en memoria con valor 0
-        // Aquí necesitarías acceso a las variables declaradas
-        // Por simplicidad, inicializamos dinámicamente cuando se usen
+        // Inicializar todas las variables declaradas con 0
+        if (tablaVariables != null) {
+            for (Map.Entry<String, TablaVariables.InfoVariable> entry :
+                    tablaVariables.obtenerTodasLasVariables().entrySet()) {
+
+                TablaVariables.InfoVariable info = entry.getValue();
+                int direccion = info.getDireccion();
+
+                // Inicializar según el tipo y rango de dirección
+                if (direccion >= 5000 && direccion < 8000) {
+                    memoriaGlobalInt.put(direccion, 0);
+                } else if (direccion >= 8000 && direccion < 11000) {
+                    memoriaGlobalFloat.put(direccion, 0.0f);
+                } else if (direccion >= 11000 && direccion < 13000) {
+                    memoriaLocalInt.put(direccion, 0);
+                } else if (direccion >= 13000 && direccion < 20000) {
+                    memoriaLocalFloat.put(direccion, 0.0f);
+                }
+            }
+        }
     }
 
     public void ejecutar() {
@@ -85,7 +108,7 @@ public class MaquinaVirtual {
 
     private void asignacion(String fuente, String destino) {
         Object valor = obtenerValor(fuente);
-        memoria.put(destino, valor);
+        asignarValor(destino, valor);
         System.out.println("  " + destino + " = " + valor);
     }
 
@@ -110,12 +133,14 @@ public class MaquinaVirtual {
         }
 
         // Mantener tipo apropiado
+        Object valorFinal;
         if (esEntero(val1) && esEntero(val2) && !operador.equals("/")) {
-            memoria.put(resultado, (int) res);
+            valorFinal = (int) res;
         } else {
-            memoria.put(resultado, (float) res);
+            valorFinal = (float) res;
         }
 
+        asignarValor(resultado, valorFinal);
         System.out.println("  " + resultado + " = " + num1 + " " + operador + " " + num2 + " = " + res);
     }
 
@@ -134,7 +159,7 @@ public class MaquinaVirtual {
             case "!=": res = num1 != num2; break;
         }
 
-        memoria.put(resultado, res);
+        asignarValor(resultado, res);
         System.out.println("  " + resultado + " = " + num1 + " " + operador + " " + num2 + " = " + res);
     }
 
@@ -144,7 +169,7 @@ public class MaquinaVirtual {
     }
 
     private void saltoIncondicional(String destino) {
-        if (!destino.equals("*")) {
+        if (!destino.equals("*") && !destino.equals("_")) {
             punteroInstruccion = Integer.parseInt(destino) - 1; // -1 porque se incrementará
             System.out.println("  Saltando a línea " + destino);
         }
@@ -163,42 +188,93 @@ public class MaquinaVirtual {
     }
 
     private Object obtenerValor(String identificador) {
-        // Si es una dirección de constante
+        // Si es una dirección de constante (números en rango 20000+)
         if (identificador.matches("\\d+")) {
             int direccion = Integer.parseInt(identificador);
-
-            // Buscar en tabla de constantes por dirección
-            if (direccion >= 20000 && direccion < 21000) {
+            if (direccion >= 20000) {
                 return obtenerConstantePorDireccion(direccion);
             }
         }
 
-        // Si está en memoria (variable o temporal)
-        if (memoria.containsKey(identificador)) {
-            return memoria.get(identificador);
+        // Si es un temporal (t1, t2, etc.)
+        if (identificador.matches("t\\d+")) {
+            return memoriaTemporales.getOrDefault(identificador, 0);
         }
 
-        // Si es un identificador de variable, inicializar con 0
-        if (identificador.matches("[a-zA-Z][a-zA-Z0-9]*")) {
-            memoria.put(identificador, 0);
-            return 0;
+        // Si es un nombre de variable, obtener su dirección
+        TablaVariables.InfoVariable info = tablaVariables.obtenerVariable(identificador);
+        if (info != null) {
+            int direccion = info.getDireccion();
+            return obtenerValorPorDireccion(direccion);
         }
 
-        // Si es "null" o "_", retornar null
+        // Si es null o _, retornar null
         if (identificador.equals("null") || identificador.equals("_")) {
             return null;
         }
 
-        throw new RuntimeException("No se puede obtener valor de: " + identificador);
+        // Si es un número literal pequeño, usarlo directamente
+        try {
+            if (identificador.contains(".")) {
+                return Float.parseFloat(identificador);
+            } else {
+                return Integer.parseInt(identificador);
+            }
+        } catch (NumberFormatException e) {
+            // No es un número
+        }
+
+        System.err.println("Advertencia: No se puede obtener valor de: " + identificador);
+        return 0;
+    }
+
+    private Object obtenerValorPorDireccion(int direccion) {
+        if (direccion >= 5000 && direccion < 8000) {
+            return memoriaGlobalInt.getOrDefault(direccion, 0);
+        } else if (direccion >= 8000 && direccion < 11000) {
+            return memoriaGlobalFloat.getOrDefault(direccion, 0.0f);
+        } else if (direccion >= 11000 && direccion < 13000) {
+            return memoriaLocalInt.getOrDefault(direccion, 0);
+        } else if (direccion >= 13000 && direccion < 20000) {
+            return memoriaLocalFloat.getOrDefault(direccion, 0.0f);
+        }
+        return 0;
+    }
+
+    private void asignarValor(String identificador, Object valor) {
+        // Si es un temporal
+        if (identificador.matches("t\\d+")) {
+            memoriaTemporales.put(identificador, valor);
+            return;
+        }
+
+        // Si es un nombre de variable, obtener su dirección
+        TablaVariables.InfoVariable info = tablaVariables.obtenerVariable(identificador);
+        if (info != null) {
+            int direccion = info.getDireccion();
+            asignarValorPorDireccion(direccion, valor);
+            return;
+        }
+
+        System.err.println("Advertencia: No se puede asignar valor a: " + identificador);
+    }
+
+    private void asignarValorPorDireccion(int direccion, Object valor) {
+        if (direccion >= 5000 && direccion < 8000) {
+            memoriaGlobalInt.put(direccion, convertirAEntero(valor));
+        } else if (direccion >= 8000 && direccion < 11000) {
+            memoriaGlobalFloat.put(direccion, convertirAFloat(valor));
+        } else if (direccion >= 11000 && direccion < 13000) {
+            memoriaLocalInt.put(direccion, convertirAEntero(valor));
+        } else if (direccion >= 13000 && direccion < 20000) {
+            memoriaLocalFloat.put(direccion, convertirAFloat(valor));
+        }
     }
 
     private Object obtenerConstantePorDireccion(int direccion) {
         if (tablaConstantes != null) {
-
             return tablaConstantes.obtenerValorPorDireccion(direccion);
-
         }
-
         return null;
     }
 
@@ -213,16 +289,74 @@ public class MaquinaVirtual {
         return 0.0;
     }
 
+    private int convertirAEntero(Object valor) {
+        if (valor instanceof Integer) {
+            return (Integer) valor;
+        } else if (valor instanceof Float) {
+            return ((Float) valor).intValue();
+        } else if (valor instanceof Double) {
+            return ((Double) valor).intValue();
+        }
+        return 0;
+    }
+
+    private float convertirAFloat(Object valor) {
+        if (valor instanceof Float) {
+            return (Float) valor;
+        } else if (valor instanceof Integer) {
+            return ((Integer) valor).floatValue();
+        } else if (valor instanceof Double) {
+            return ((Double) valor).floatValue();
+        }
+        return 0.0f;
+    }
+
     private boolean esEntero(Object valor) {
         return valor instanceof Integer;
     }
 
     private void imprimirEstadoMemoria() {
         System.out.println("\n=== ESTADO FINAL DE MEMORIA ===");
-        for (Map.Entry<String, Object> entry : memoria.entrySet()) {
-            System.out.println(entry.getKey() + " = " + entry.getValue());
+
+        System.out.println("Variables Globales Int:");
+        for (Map.Entry<Integer, Object> entry : memoriaGlobalInt.entrySet()) {
+            String nombre = obtenerNombreVariable(entry.getKey());
+            System.out.println("  " + nombre + " [" + entry.getKey() + "] = " + entry.getValue());
+        }
+
+        System.out.println("Variables Globales Float:");
+        for (Map.Entry<Integer, Object> entry : memoriaGlobalFloat.entrySet()) {
+            String nombre = obtenerNombreVariable(entry.getKey());
+            System.out.println("  " + nombre + " [" + entry.getKey() + "] = " + entry.getValue());
+        }
+
+        System.out.println("Variables Locales Int:");
+        for (Map.Entry<Integer, Object> entry : memoriaLocalInt.entrySet()) {
+            String nombre = obtenerNombreVariable(entry.getKey());
+            System.out.println("  " + nombre + " [" + entry.getKey() + "] = " + entry.getValue());
+        }
+
+        System.out.println("Variables Locales Float:");
+        for (Map.Entry<Integer, Object> entry : memoriaLocalFloat.entrySet()) {
+            String nombre = obtenerNombreVariable(entry.getKey());
+            System.out.println("  " + nombre + " [" + entry.getKey() + "] = " + entry.getValue());
+        }
+
+        if (!memoriaTemporales.isEmpty()) {
+            System.out.println("Temporales:");
+            for (Map.Entry<String, Object> entry : memoriaTemporales.entrySet()) {
+                System.out.println("  " + entry.getKey() + " = " + entry.getValue());
+            }
         }
     }
 
-
+    private String obtenerNombreVariable(int direccion) {
+        for (Map.Entry<String, TablaVariables.InfoVariable> entry :
+                tablaVariables.obtenerTodasLasVariables().entrySet()) {
+            if (entry.getValue().getDireccion() == direccion) {
+                return entry.getKey();
+            }
+        }
+        return "dir_" + direccion;
+    }
 }

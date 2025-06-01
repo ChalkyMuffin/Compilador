@@ -51,14 +51,11 @@ expression    : exp (MENOR_QUE exp | MAYOR_QUE exp| IGUALDAD_ABS exp | DESIGUALD
 
 
 
-term       : term (MULT | DIVIDE) factor   # mulExpr
-           | factor                    # factorExpr
+term       : factor (MULT factor | DIVIDE factor)?    # mulExpr
            ;
 
 factor     : '(' expression ')'
-           | (SUMA | RESTA)
-           | ID
-           | cte
+           | ((SUMA | RESTA) (ID| cte))
            ;
 
 

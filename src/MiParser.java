@@ -178,6 +178,7 @@ public class MiParser extends ExprBaseVisitor<Void> {
         return null;
     }
 
+    //Suma y resta
     @Override
     public Void visitAritExpr(ExprParser.AritExprContext ctx) {
         visit(ctx.term(0)); // Visita el primer término
@@ -201,20 +202,36 @@ public class MiParser extends ExprBaseVisitor<Void> {
         return null;
     }
 
+    // Multiplicacion y division
     @Override
     public Void visitMulExpr(ExprParser.MulExprContext ctx) {
-        visit(ctx.term());
-        visit(ctx.factor());
 
-        String operador = ctx.getChild(1).getText(); // '*' o '/'
-        pilas.operadores.push(operador);
+        visit(ctx.factor(0)); // Visita el primer término
 
-        generarCuadruplo();
+        if (ctx.factor().size() > 1) {
+            // Buscar el operador correctamente
+            String operador = null;
+            if (ctx.MULT() != null) {
+                operador = "*";
+            } else if (ctx.DIVIDE() != null) {
+                operador = "/";
+            }
+
+            if (operador != null) {
+                pilas.operadores.push(operador);
+                visit(ctx.factor(1)); // Visita el segundo término
+                generarCuadruplo();
+            }
+        }
+
         return null;
+
     }
+
     @Override
     public Void visitAssign(ExprParser.AssignContext ctx) {
         String variable = ctx.ID().getText();
+        //Expresion a cuyo resultado se va a igualar
         visit(ctx.expression());
 
 
@@ -226,12 +243,16 @@ public class MiParser extends ExprBaseVisitor<Void> {
         pilas.agregarCuadruplo("=", resultado, null, variable);
         return null;
     }
+
+
+
     @Override
     public Void visitExpression(ExprParser.ExpressionContext ctx) {
-        visit(ctx.exp(0)); // Visita el primer término
+        visit(ctx.exp(0));
 
+        //Checa si hay mas de una expression
         if (ctx.exp().size() > 1) {
-            visit(ctx.exp(1)); // Visita el segundo término
+            visit(ctx.exp(1));
 
             String operador = ctx.getChild(1).getText();
             pilas.operadores.push(operador);
@@ -242,26 +263,23 @@ public class MiParser extends ExprBaseVisitor<Void> {
         return null;
     }
 
+    //If
     @Override
     public Void visitCondition(ExprParser.ConditionContext ctx) {
         visit(ctx.expression());
 
-        String condicion = pilas.operandos.pop();
-        String tipoCond = pilas.tipos.pop();
+        String condicional = pilas.operandos.pop();
 
-//        if (!tipoCond.equals("bool")) {
-//            throw new RuntimeException("Condición no booleana en if. Tipo = " + tipoCond);
-//        }
 
         // Cuádruplo GOTOF con salto pendiente
-        pilas.agregarCuadruplo("GOTOF", condicion, "_", "pendiente");
+        pilas.agregarCuadruplo("GOTOF", condicional, "_", "pendiente");
         pilas.saltos.push(pilas.listaCuadruplos().size() - 1);
 
         // Cuerpo del if
         visit(ctx.body(0));
 
+        // Checa si hay un else checando si hay mas de un body
         if (ctx.body().size() > 1) {
-            // Hay else -> cuádruplo GOTO con salto pendiente
             pilas.agregarCuadruplo("GOTO", "_", "_", "pendiente");
             int falso = pilas.saltos.pop();
             pilas.actualizarCuadruplo(falso, String.valueOf(pilas.listaCuadruplos().size()));
@@ -280,32 +298,27 @@ public class MiParser extends ExprBaseVisitor<Void> {
         return null;
     }
 
+    //While
     @Override
     public Void visitCycle(ExprParser.CycleContext ctx) {
-        // Paso 1: Marca el inicio del ciclo
+        // Marca el numero del cuadruplo en el que inicia para darselo al GOTO del final
         int inicioCiclo = pilas.listaCuadruplos().size();
 
-        // Paso 2: Visita la expresión de la condición
         visit(ctx.expression());
 
-        // Paso 3: Revisa tipo
-        String condicion = pilas.operandos.pop();
-        String tipoCond = pilas.tipos.pop();
-//        if (!tipoCond.equals("bool")) {
-//            throw new RuntimeException("Condición no booleana en ciclo while.");
-//        }
+        String condicional = pilas.operandos.pop();
 
-        // Paso 4: Crea GOTOF con destino pendiente
-        pilas.agregarCuadruplo("GOTOF", condicion, "_", "pendiente");
+        // Cuádruplo GOTOF con salto pendiente
+        pilas.agregarCuadruplo("GOTOF", condicional, "_", "pendiente");
         pilas.saltos.push(pilas.listaCuadruplos().size() - 1);
 
-        // Paso 5: Visita el cuerpo del ciclo
+        //Cuerpo del while
         visit(ctx.body());
 
-        // Paso 6: GOTO de regreso al inicio del ciclo
+        // GOTOF de regreso al inicio del ciclo
         pilas.agregarCuadruplo("GOTO", "_", "_", String.valueOf(inicioCiclo));
 
-        // Paso 7: Backpatch del GOTOF
+        // Backpatch del GOTOF
         int falso = pilas.saltos.pop();
         pilas.actualizarCuadruplo(falso, String.valueOf(pilas.listaCuadruplos().size()));
 
@@ -323,14 +336,15 @@ public class MiParser extends ExprBaseVisitor<Void> {
             String operador = pilas.operadores.pop();
             String der = pilas.operandos.pop();
             String izq = pilas.operandos.pop();
-            String tipoDer = pilas.tipos.pop();
             String tipoIzq = pilas.tipos.pop();
+//          String tipoDer = pilas.tipos.pop();
+//
+//            if (!tipoDer.equals(tipoIzq)) {
+//                System.err.println("Error: Tipos incompatibles entre " + izq + " y " + der);
+//            }
 
-            if (!tipoDer.equals(tipoIzq)) {
-                System.err.println("Error: Tipos incompatibles entre " + izq + " y " + der);
-            }
-
-            String temp = pilas.nuevoTemporal(); // genera t1, t2, ...
+            //Temporales
+            String temp = pilas.nuevoTemporal();
             pilas.operandos.push(temp);
             pilas.tipos.push(tipoIzq); // asumir mismo tipo
 
@@ -339,19 +353,17 @@ public class MiParser extends ExprBaseVisitor<Void> {
     }
 
 
-    @Override
-    public Void visitPrintStat(ExprParser.PrintStatContext ctx) {
-        // Visita la expresión dentro del print
-        visit(ctx.printExpr());
-        return null;
-    }
 
+    //Print
     @Override
     public Void visitPrintExpr(ExprParser.PrintExprContext ctx) {
-        // Visita la expresión que se va a imprimir
         visit(ctx.expression());
 
-        // Obtén el resultado de la expresión de las pilas
+//        String resultado = pilas.operandos.peek();
+//        System.out.println("Resultado check: " + resultado);
+
+
+        // Obtén el resultado de operacion en los cuadruplos
         String argumento = pilas.operandos.pop();
         pilas.tipos.pop(); // También quita el tipo
 
