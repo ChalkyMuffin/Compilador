@@ -1,6 +1,7 @@
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
+import java.util.Stack;
 
 public class MaquinaVirtual {
     // Memoria dividida por tipos y rangos
@@ -14,6 +15,11 @@ public class MaquinaVirtual {
     private int punteroInstruccion = 0;
     private TablaVariables tablaVariables;
     private TablaConstantes tablaConstantes;
+
+    private Stack<Integer> pilaRetorno = new Stack<>();
+    private Stack<Map<Integer, Object>> pilaMemoriaLocal = new Stack<>();
+    private Map<String, Object> parametrosActuales = new HashMap<>();
+
 
     public MaquinaVirtual(List<List<String>> cuadruplos, TablaVariables tablaVariables, TablaConstantes tablaConstantes) {
         this.cuadruplos = cuadruplos;
@@ -42,6 +48,110 @@ public class MaquinaVirtual {
                     memoriaLocalFloat.put(direccion, 0.0f);
                 }
             }
+        }
+    }
+
+    private void era(String nombreFuncion) {
+        System.out.println("  ERA: Preparando espacio para función " + nombreFuncion);
+
+        // Guardar estado actual de memoria local
+        Map<Integer, Object> memoriaActual = new HashMap<>(memoriaLocalInt);
+        memoriaActual.putAll(memoriaLocalFloat);
+        pilaMemoriaLocal.push(memoriaActual);
+
+        // Limpiar memoria local para nueva función
+        memoriaLocalInt.clear();
+        memoriaLocalFloat.clear();
+        parametrosActuales.clear();
+    }
+
+    private void param(String valor, String indiceParam) {
+        Object valorParametro = obtenerValor(valor);
+        int indice = Integer.parseInt(indiceParam);
+
+        System.out.println("  PARAM " + indice + ": " + valorParametro);
+        parametrosActuales.put("param_" + indice, valorParametro);
+    }
+
+    private void gosub(String nombreFuncion) {
+        System.out.println("  GOSUB: Llamando a función " + nombreFuncion);
+
+        // Guardar dirección de retorno
+        pilaRetorno.push(punteroInstruccion + 1);
+
+        // Buscar dirección de inicio de la función
+        // Aquí necesitarías acceso al DirectorioFunciones
+        // Por simplicidad, buscaremos la función por nombre en los cuádruplos
+        int direccionFuncion = buscarDireccionFuncion(nombreFuncion);
+
+        if (direccionFuncion != -1) {
+            // Inicializar parámetros en memoria local
+            inicializarParametros(nombreFuncion);
+
+            punteroInstruccion = direccionFuncion;
+        } else {
+            System.err.println("Error: Función " + nombreFuncion + " no encontrada");
+        }
+    }
+
+    private void endfunc() {
+        System.out.println("  ENDFUNC: Retornando de función");
+
+        if (!pilaRetorno.isEmpty()) {
+            // Restaurar memoria local anterior
+            if (!pilaMemoriaLocal.isEmpty()) {
+                Map<Integer, Object> memoriaAnterior = pilaMemoriaLocal.pop();
+                memoriaLocalInt.clear();
+                memoriaLocalFloat.clear();
+
+                for (Map.Entry<Integer, Object> entrada : memoriaAnterior.entrySet()) {
+                    int direccion = entrada.getKey();
+                    Object valor = entrada.getValue();
+
+                    if (direccion >= 11000 && direccion < 13000) {
+                        memoriaLocalInt.put(direccion, valor);
+                    } else if (direccion >= 13000 && direccion < 20000) {
+                        memoriaLocalFloat.put(direccion, valor);
+                    }
+                }
+            }
+
+            // Retornar a la dirección guardada
+            punteroInstruccion = pilaRetorno.pop();
+        }
+        else {
+            System.err.println("Error: Pila de retorno vacía");
+        }
+    }
+
+    private int buscarDireccionFuncion(String nombreFuncion) {
+        // Buscar en los cuádruplos una función con el nombre dado
+        // Esto es una implementación simple - podrías mejorarla
+        for (int i = 0; i < cuadruplos.size(); i++) {
+            List<String> cuad = cuadruplos.get(i);
+            if (cuad.get(0).equals("ERA") && cuad.get(1).equals(nombreFuncion)) {
+                // La función debería empezar después del ERA
+                return i + 1;
+            }
+        }
+        return -1;
+    }
+
+    private void inicializarParametros(String nombreFuncion) {
+        // Inicializar parámetros en memoria local
+        // Esta es una implementación básica
+        int direccionParam = 11000; // Empezar en direcciones locales
+
+        for (Map.Entry<String, Object> param : parametrosActuales.entrySet()) {
+            Object valor = param.getValue();
+
+            if (valor instanceof Integer) {
+                memoriaLocalInt.put(direccionParam, valor);
+            } else if (valor instanceof Float) {
+                memoriaLocalFloat.put(direccionParam, valor);
+            }
+
+            direccionParam++;
         }
     }
 
@@ -95,6 +205,18 @@ public class MaquinaVirtual {
                 case "GOTOF":
                     saltoCondicional(arg1, resultado);
                     break;
+                case "ERA":
+                    era(arg1);
+                    break;
+                case "PARAM":
+                    param(arg1, resultado);
+                    break;
+                case "GOSUB":
+                    gosub(arg1);
+                    continue; // No incrementar puntero aquí
+                case "ENDFUNC":
+                    endfunc();
+                    continue; // No incrementar puntero aquí
                 default:
                     System.err.println("Operación no reconocida: " + operacion);
             }

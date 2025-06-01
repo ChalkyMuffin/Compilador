@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 
 public class MiParser extends ExprBaseVisitor<Void> {
-   //Tabla de variables
+    //Tabla de variables
     TablaVariables tabla = new TablaVariables();
 
     @Override
@@ -52,45 +52,39 @@ public class MiParser extends ExprBaseVisitor<Void> {
         String tipoRetorno = "void";
 
         List<String> tiposParametros = new ArrayList<>();
-        // Contador de tipos
         Map<String, Integer> contadorTipos = new HashMap<>();
 
-// 1. Contar tipos de parámetros
+        // 1. Contar tipos de parámetros
         if (ctx.params() != null) {
             for (ExprParser.ParamContext paramCtx : ctx.params().param()) {
                 String tipo = paramCtx.type().getText();
                 contadorTipos.put(tipo, contadorTipos.getOrDefault(tipo, 0) + 1);
-//                System.out.println("Contador Tipos 1: " + contadorTipos);
-//                System.out.println("Parametro - Tipo: " + tipo + ", Nombre: " + paramCtx.ID().getText());
             }
         }
 
-// 2. Contar tipos de variables locales
+        // 2. Contar tipos de variables locales
         if (ctx.vars_decl() != null) {
             for (ExprParser.Vars_declContext varsDeclCtx : ctx.vars_decl()) {
                 String tipo = varsDeclCtx.type().getText();
-                String nombre = varsDeclCtx.ID().getText(); // Solo un ID por declaración
+                String nombre = varsDeclCtx.ID().getText();
                 contadorTipos.put(tipo, contadorTipos.getOrDefault(tipo, 0) + 1);
-//                System.out.println("Contador Tipos 2: " + contadorTipos);
-//                System.out.println("Variable local - Tipo: " + tipo + ", Nombre: " + nombre);
             }
         }
 
+        int direccionInicio = pilas.cuadruplos.size() + 1; // +1 porque será la siguiente instrucción
 
-
-        int direccionInicio = pilas.cuadruplos.size();
-
-        // 1. Cambia la tabla actual de variables
+        // Cambiar tabla actual de variables
         TablaVariables tablaTemporal = new TablaVariables();
-        tablaVariablesActual = tablaTemporal; // Asumimos que tienes un puntero actual
+        tablaVariablesActual = tablaTemporal;
 
-        // 2. Visita hijos primero para llenar la tabla de variables locales
+        // Visitar hijos para llenar tabla de variables locales
         visitChildren(ctx);
 
-        // 3. Luego cuenta las variables ya insertadas
-        Map<String, Integer> conteo = tablaTemporal.contarVariablesPorTipo();
+        // AGREGAR ENDFUNC al final de la función
+        pilas.agregarCuadruplo("ENDFUNC", "_", "_", "_");
 
-        // 4. Finalmente, registra la función
+        // Contar variables ya insertadas y registrar función
+        Map<String, Integer> conteo = tablaTemporal.contarVariablesPorTipo();
         dirFun.actualizarFuncion(nombreFuncion, conteo, tablaTemporal);
         dirFun.declararFuncion(nombreFuncion, tipoRetorno, direccionInicio, contadorTipos, tablaTemporal);
 
@@ -101,11 +95,30 @@ public class MiParser extends ExprBaseVisitor<Void> {
         dirFun.imprimirFunciones();
     }
 
+    // MODIFICAR el método visitF_call para implementar ERA, PARAM y GOSUB
     @Override
     public Void visitF_call(ExprParser.F_callContext ctx) {
-        visit(ctx.expression());
+        String nombreFuncion = ctx.ID().getText();
 
+        // 1. Generar ERA (Espacio en Registro de Activación)
+        pilas.agregarCuadruplo("ERA", nombreFuncion, "_", "_");
 
+        // 2. Evaluar parámetros y generar PARAM
+        if (ctx.expression() != null) {
+            List<ExprParser.ExpressionContext> parametros = ctx.expression();
+            for (int i = 0; i < parametros.size(); i++) {
+                visit(parametros.get(i));  // Evaluar expresión del parámetro
+
+                String valorParametro = pilas.operandos.pop();
+                pilas.tipos.pop();
+
+                // Generar cuádruplo PARAM
+                pilas.agregarCuadruplo("PARAM", valorParametro, "_", String.valueOf(i));
+            }
+        }
+
+        // 3. Generar GOSUB
+        pilas.agregarCuadruplo("GOSUB", nombreFuncion, "_", "_");
 
         return null;
     }
