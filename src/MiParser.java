@@ -291,6 +291,18 @@ public class MiParser extends ExprBaseVisitor<Void> {
         return null;
     }
 
+    @Override
+    public Void visitMainBody(ExprParser.MainBodyContext ctx) {
+
+        pilas.agregarCuadruplo("GOTO", "main", "_", "pendiente");
+        int mainDir = pilas.cuadruplos.size();
+
+
+
+        return null;
+    }
+
+
     //If
     @Override
     public Void visitCondition(ExprParser.ConditionContext ctx) {

@@ -6,8 +6,10 @@ grammar Expr;
 /* Estructura general del programa */
 prog    : 'program' ID ';'
           vars_declGlobal*?  funcs_decl*?
-          'main' body
+          mainBody
           'end' ;
+
+mainBody: 'main' body;
 
 vars_declGlobal : 'var' ID  ':' type ';' ;
 
