@@ -58,6 +58,7 @@ public class MaquinaVirtual {
         Map<Integer, Object> memoriaActual = new HashMap<>(memoriaLocalInt);
         memoriaActual.putAll(memoriaLocalFloat);
         pilaMemoriaLocal.push(memoriaActual);
+        System.out.println("Memoria local" + pilaMemoriaLocal.peek());
 
         // Limpiar memoria local para nueva función
         memoriaLocalInt.clear();
@@ -97,31 +98,32 @@ public class MaquinaVirtual {
     private void endfunc() {
         System.out.println("  ENDFUNC: Retornando de función");
 
-        if (!pilaRetorno.isEmpty()) {
-            // Restaurar memoria local anterior
-            if (!pilaMemoriaLocal.isEmpty()) {
-                Map<Integer, Object> memoriaAnterior = pilaMemoriaLocal.pop();
-                memoriaLocalInt.clear();
-                memoriaLocalFloat.clear();
+        // AGREGAR ESTA VERIFICACIÓN
+        if (pilaRetorno.isEmpty()) {
+            System.out.println("  ENDFUNC ignorado - no hay función activa");
+            return; // Simplemente continuar sin hacer nada
+        }
 
-                for (Map.Entry<Integer, Object> entrada : memoriaAnterior.entrySet()) {
-                    int direccion = entrada.getKey();
-                    Object valor = entrada.getValue();
+        // Restaurar memoria local anterior
+        if (!pilaMemoriaLocal.isEmpty()) {
+            Map<Integer, Object> memoriaAnterior = pilaMemoriaLocal.pop();
+            memoriaLocalInt.clear();
+            memoriaLocalFloat.clear();
 
-                    if (direccion >= 11000 && direccion < 13000) {
-                        memoriaLocalInt.put(direccion, valor);
-                    } else if (direccion >= 13000 && direccion < 20000) {
-                        memoriaLocalFloat.put(direccion, valor);
-                    }
+            for (Map.Entry<Integer, Object> entrada : memoriaAnterior.entrySet()) {
+                int direccion = entrada.getKey();
+                Object valor = entrada.getValue();
+
+                if (direccion >= 11000 && direccion < 13000) {
+                    memoriaLocalInt.put(direccion, valor);
+                } else if (direccion >= 13000 && direccion < 20000) {
+                    memoriaLocalFloat.put(direccion, valor);
                 }
             }
+        }
 
-            // Retornar a la dirección guardada
-            punteroInstruccion = pilaRetorno.pop();
-        }
-        else {
-            System.err.println("Error: Pila de retorno vacía");
-        }
+        // Retornar a la dirección guardada
+        punteroInstruccion = pilaRetorno.pop();
     }
 
     private int buscarDireccionFuncion(String nombreFuncion) {
@@ -216,7 +218,7 @@ public class MaquinaVirtual {
                     continue; // No incrementar puntero aquí
                 case "ENDFUNC":
                     endfunc();
-                    continue; // No incrementar puntero aquí
+                    break; // No incrementar puntero aquí
                 default:
                     System.err.println("Operación no reconocida: " + operacion);
             }

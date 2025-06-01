@@ -55,6 +55,13 @@ public class DirectorioFunciones {
         }
     }
 
+    public void actualizardirInicio(String nombre, int nuevaDirInicio) {
+        FuncionInfo info = funciones.get(nombre);
+        if (info != null) {
+            info.direccionInicio = nuevaDirInicio;
+        }
+    }
+
     public void imprimirFunciones() {
         System.out.println("=== Directorio de Funciones ===");
         for (Map.Entry<String, FuncionInfo> entrada : funciones.entrySet()) {

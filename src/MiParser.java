@@ -91,9 +91,7 @@ public class MiParser extends ExprBaseVisitor<Void> {
         return null;
     }
 
-    public void imprimirFunciones() {
-        dirFun.imprimirFunciones();
-    }
+
 
     // MODIFICAR el método visitF_call para implementar ERA, PARAM y GOSUB
     @Override
@@ -102,6 +100,9 @@ public class MiParser extends ExprBaseVisitor<Void> {
 
         // 1. Generar ERA (Espacio en Registro de Activación)
         pilas.agregarCuadruplo("ERA", nombreFuncion, "_", "_");
+//        System.out.println( "Cuadruplo size: " + pilas.cuadruplos.size());
+        dirFun.actualizardirInicio(nombreFuncion, pilas.cuadruplos.size());
+
 
         // 2. Evaluar parámetros y generar PARAM
         if (ctx.expression() != null) {
@@ -113,7 +114,7 @@ public class MiParser extends ExprBaseVisitor<Void> {
                 pilas.tipos.pop();
 
                 // Generar cuádruplo PARAM
-                pilas.agregarCuadruplo("PARAM", valorParametro, "_", String.valueOf(i));
+                pilas.agregarCuadruplo("PARAM", valorParametro, "_", "p"+String.valueOf(i+1));
             }
         }
 
@@ -121,6 +122,10 @@ public class MiParser extends ExprBaseVisitor<Void> {
         pilas.agregarCuadruplo("GOSUB", nombreFuncion, "_", "_");
 
         return null;
+    }
+
+    public void imprimirFunciones() {
+        dirFun.imprimirFunciones();
     }
 
     TablaConstantes tablaConstantes = new TablaConstantes();

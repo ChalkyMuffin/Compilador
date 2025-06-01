@@ -1,6 +1,7 @@
 program lol;
 var c : int;
 var d : int;
+var e : int;
 
 void ejemploFuncion(fun:int, unfun:float)
 [var a : int;
@@ -16,7 +17,7 @@ c = 0;
 d = 20;
 if (c > 0){
    c = c - a;
-   ejemploFuncion(c + d ,a);
+   ejemploFuncion(c + d ,e);
    print(c);
 }
 else{
