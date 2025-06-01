@@ -52,10 +52,13 @@ expression    : exp (MENOR_QUE exp | MAYOR_QUE exp| IGUALDAD_ABS exp | DESIGUALD
 
 
 term       : factor (MULT factor | DIVIDE factor)?    # mulExpr
+           | factor                    # factorExpr
            ;
 
 factor     : '(' expression ')'
-           | ((SUMA | RESTA) (ID| cte))
+           | (SUMA | RESTA)
+           | ID
+           | cte
            ;
 
 
