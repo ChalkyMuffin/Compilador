@@ -15,17 +15,27 @@ public class MaquinaVirtual {
     private int punteroInstruccion = 0;
     private TablaVariables tablaVariables;
     private TablaConstantes tablaConstantes;
+    private OutputManager outputManager; // AGREGADO
+    private PilasYCuadruplos pilasYCuadruplos; // AGREGADO
 
     private Stack<Integer> pilaRetorno = new Stack<>();
     private Stack<Map<Integer, Object>> pilaMemoriaLocal = new Stack<>();
     private Map<String, Object> parametrosActuales = new HashMap<>();
 
-
-    public MaquinaVirtual(List<List<String>> cuadruplos, TablaVariables tablaVariables, TablaConstantes tablaConstantes) {
+    // CONSTRUCTOR MODIFICADO
+    public MaquinaVirtual(List<List<String>> cuadruplos, TablaVariables tablaVariables,
+                          TablaConstantes tablaConstantes, OutputManager outputManager, PilasYCuadruplos pilasYCuadruplos) {
         this.cuadruplos = cuadruplos;
         this.tablaVariables = tablaVariables;
         this.tablaConstantes = tablaConstantes;
+        this.outputManager = outputManager;
+        this.pilasYCuadruplos = pilasYCuadruplos;
         inicializarMemoria();
+    }
+
+    // Constructor alternativo para mantener compatibilidad (con debug por defecto)
+    public MaquinaVirtual(List<List<String>> cuadruplos, TablaVariables tablaVariables, TablaConstantes tablaConstantes, PilasYCuadruplos pilasYCuadruplos) {
+        this(cuadruplos, tablaVariables, tablaConstantes, new OutputManager(true), pilasYCuadruplos);
     }
 
     private void inicializarMemoria() {
@@ -52,13 +62,13 @@ public class MaquinaVirtual {
     }
 
     private void era(String nombreFuncion) {
-        System.out.println("  ERA: Preparando espacio para función " + nombreFuncion);
+        outputManager.debugPrint("  ERA: Preparando espacio para función " + nombreFuncion);
 
         // Guardar estado actual de memoria local
         Map<Integer, Object> memoriaActual = new HashMap<>(memoriaLocalInt);
         memoriaActual.putAll(memoriaLocalFloat);
         pilaMemoriaLocal.push(memoriaActual);
-        System.out.println("Memoria local" + pilaMemoriaLocal.peek());
+        outputManager.debugPrint("Memoria local" + pilaMemoriaLocal.peek());
 
         // Limpiar memoria local para nueva función
         memoriaLocalInt.clear();
@@ -68,37 +78,24 @@ public class MaquinaVirtual {
 
     private void param(String valor, String indiceParam) {
         Object valorParametro = obtenerValor(valor);
-        System.out.println("Valor: " + obtenerValor(valor));
-
-
-        System.out.println("  PARAM " + indiceParam + ": " + valorParametro);
+        outputManager.debugPrint("Valor: " + obtenerValor(valor));
+        outputManager.debugPrint("  PARAM " + indiceParam + ": " + valorParametro);
         parametrosActuales.put("param_" + indiceParam, valorParametro);
-
-
-
-
-
-//        int indice = Integer.parseInt(indiceParam);
-//
-//        System.out.println("  PARAM " + indice + ": " + valorParametro);
-//        parametrosActuales.put("param_" + indice, valorParametro);
     }
 
     private void gosub(String nombreFuncion) {
-        System.out.println("  GOSUB: Llamando a función " + nombreFuncion);
+        outputManager.debugPrint("  GOSUB: Llamando a función " + nombreFuncion);
 
         // Guardar dirección de retorno
         pilaRetorno.push(punteroInstruccion + 1);
 
         // Buscar dirección de inicio de la función
-        // Se usa el metodo de directorio de funciones para conseguir la direccion de inicio
         DirectorioFunciones dirFun = new DirectorioFunciones();
         int direccionFuncion = dirFun.getDireccionInicio(nombreFuncion);
 
         if (direccionFuncion != -1) {
             // Inicializar parámetros en memoria local
-            inicializarParametros(nombreFuncion);
-
+            inicializarParametros(nombreFuncion, direccionFuncion);
             punteroInstruccion = direccionFuncion - 1;
         } else {
             System.err.println("Error: Función " + nombreFuncion + " no encontrada");
@@ -106,11 +103,11 @@ public class MaquinaVirtual {
     }
 
     private void endfunc() {
-        System.out.println("  ENDFUNC: Retornando de función");
+        outputManager.debugPrint("  ENDFUNC: Retornando de función");
 
         // AGREGAR ESTA VERIFICACIÓN
         if (pilaRetorno.isEmpty()) {
-            System.out.println("  ENDFUNC ignorado - no hay función activa");
+            outputManager.debugPrint("  ENDFUNC ignorado - no hay función activa");
             return; // Simplemente continuar sin hacer nada
         }
 
@@ -138,48 +135,39 @@ public class MaquinaVirtual {
 
     private int buscarDireccionFuncion(String nombreFuncion) {
         // Buscar en los cuádruplos una función con el nombre dado
-        // Esto es una implementación simple - podrías mejorarla
         for (int i = 0; i < cuadruplos.size(); i++) {
             List<String> cuad = cuadruplos.get(i);
             if (cuad.get(0).equals("ERA") && cuad.get(1).equals(nombreFuncion)) {
-                // La función debería empezar después del ERA
                 return i + 1;
             }
         }
         return -1;
     }
 
-    //Parametros para funciones
-    private void inicializarParametros(String nombreFuncion) {
+    private void inicializarParametros(String nombreFuncion, int direccionFuncion) {
         // Inicializar parámetros en memoria local
-        // Esta es una implementación básica
         int direccionParam = 11000; // Empezar en direcciones locales
+        String parametros = pilasYCuadruplos.imprimirParametroCuadruplo(direccionFuncion, 1);
 
-//        int i = 0;
+        System.out.println("*****************************");
+        System.out.println("Temp: " + parametros);
+        System.out.println("*****************************");
+
         for (Map.Entry<String, Object> param : parametrosActuales.entrySet()) {
-//            i++;
             Object valor = param.getValue();
-//            System.out.println("i = " + i);
-//            System.out.println("************************************************************");
-//            System.out.println("Datos del parametro: " + param.getKey() + " " + param.getValue());
-//            System.out.println("Variables locales: " + tablaVariables.getVariablesLocales());
-//            System.out.println("************************************************************");
 
             if (valor instanceof Integer) {
                 memoriaLocalInt.put(direccionParam , valor);
             } else {
-//                direccionParam = tablaVariables.obtenerDireccion(nombreFuncion);
                 direccionParam = 13000;
-//                System.out.println("Direccion siguiente float: " + valor);
                 memoriaLocalFloat.put(direccionParam, valor);
             }
-
             direccionParam++;
         }
     }
 
     public void ejecutar() {
-        System.out.println("\n=== EJECUTANDO PROGRAMA ===");
+        outputManager.debugPrint("\n=== EJECUTANDO PROGRAMA ===");
 
         while (punteroInstruccion < cuadruplos.size()) {
             List<String> cuadruplo = cuadruplos.get(punteroInstruccion);
@@ -188,7 +176,7 @@ public class MaquinaVirtual {
             String arg2 = cuadruplo.get(2);
             String resultado = cuadruplo.get(3);
 
-            System.out.printf("Ejecutando %02d: (%s, %s, %s, %s)\n",
+            outputManager.debugPrintf("Ejecutando %02d: (%s, %s, %s, %s)\n",
                     punteroInstruccion + 1, operacion, arg1, arg2, resultado);
 
             switch (operacion) {
@@ -224,7 +212,7 @@ public class MaquinaVirtual {
                     break;
                 case "GOTO":
                     saltoIncondicional(resultado);
-                    continue; // No incrementar puntero
+                    continue;
                 case "GOTOF":
                     saltoCondicional(arg1, resultado);
                     break;
@@ -236,10 +224,10 @@ public class MaquinaVirtual {
                     break;
                 case "GOSUB":
                     gosub(arg1);
-                    continue; // No incrementar puntero aquí
+                    continue;
                 case "ENDFUNC":
                     endfunc();
-                    continue; // No incrementar puntero aquí
+                    continue;
                 default:
                     System.err.println("Operación no reconocida: " + operacion);
             }
@@ -247,14 +235,17 @@ public class MaquinaVirtual {
             punteroInstruccion++;
         }
 
-        System.out.println("\n=== FIN DE EJECUCIÓN ===");
+        outputManager.debugPrint("\n=== FIN DE EJECUCIÓN ===");
         imprimirEstadoMemoria();
+
+        // MOSTRAR SALIDA DEL PROGRAMA
+        outputManager.showProgramOutput();
     }
 
     private void asignacion(String fuente, String destino) {
         Object valor = obtenerValor(fuente);
         asignarValor(destino, valor);
-        System.out.println("  " + destino + " = " + valor);
+        outputManager.debugPrint("  " + destino + " = " + valor);
     }
 
     private void operacionAritmetica(String arg1, String arg2, String resultado, String operador) {
@@ -286,7 +277,7 @@ public class MaquinaVirtual {
         }
 
         asignarValor(resultado, valorFinal);
-        System.out.println("  " + resultado + " = " + num1 + " " + operador + " " + num2 + " = " + res);
+        outputManager.debugPrint("  " + resultado + " = " + num1 + " " + operador + " " + num2 + " = " + res);
     }
 
     private void operacionRelacional(String arg1, String arg2, String resultado, String operador) {
@@ -305,18 +296,24 @@ public class MaquinaVirtual {
         }
 
         asignarValor(resultado, res);
-        System.out.println("  " + resultado + " = " + num1 + " " + operador + " " + num2 + " = " + res);
+        outputManager.debugPrint("  " + resultado + " = " + num1 + " " + operador + " " + num2 + " = " + res);
     }
 
+    // MÉTODO PRINT MODIFICADO - AQUÍ ESTÁ EL CAMBIO PRINCIPAL
     private void print(String arg) {
         Object valor = obtenerValor(arg);
-        System.out.println("PRINT: " + valor);
+
+        // Agregar a la salida del programa (lo que ve el usuario final)
+        outputManager.addProgramOutput(String.valueOf(valor));
+
+        // Mensaje de debug (solo si está habilitado)
+        outputManager.debugPrint("PRINT: " + valor);
     }
 
     private void saltoIncondicional(String destino) {
         if (!destino.equals("*") && !destino.equals("_")) {
-            punteroInstruccion = Integer.parseInt(destino) - 1; // -1 porque se incrementará
-            System.out.println("  Saltando a línea " + destino);
+            punteroInstruccion = Integer.parseInt(destino) - 1;
+            outputManager.debugPrint("  Saltando a línea " + destino);
         }
     }
 
@@ -326,14 +323,24 @@ public class MaquinaVirtual {
 
         if (!cond && !destino.equals("_")) {
             punteroInstruccion = Integer.parseInt(destino) - 1;
-            System.out.println("  Condición falsa, saltando a línea " + destino);
+            outputManager.debugPrint("  Condición falsa, saltando a línea " + destino);
         } else {
-            System.out.println("  Condición verdadera, continuando");
+            outputManager.debugPrint("  Condición verdadera, continuando");
         }
     }
 
+    // MÉTODO PARA OBTENER SOLO LA SALIDA DEL PROGRAMA
+    public List<String> getProgramOutput() {
+        return outputManager.getProgramOutput();
+    }
+
+    // MÉTODO PARA CAMBIAR MODO DEBUG
+    public void setDebugMode(boolean debug) {
+        this.outputManager = new OutputManager(debug);
+    }
+
+    // Resto de métodos sin cambios...
     private Object obtenerValor(String identificador) {
-        // Si es una dirección de constante (números en rango 20000+)
         if (identificador.matches("\\d+")) {
             int direccion = Integer.parseInt(identificador);
             if (direccion >= 20000) {
@@ -341,24 +348,20 @@ public class MaquinaVirtual {
             }
         }
 
-        // Si es un temporal (t1, t2, etc.)
         if (identificador.matches("t\\d+")) {
             return memoriaTemporales.getOrDefault(identificador, 0);
         }
 
-        // Si es un nombre de variable, obtener su dirección
         TablaVariables.InfoVariable info = tablaVariables.obtenerVariable(identificador);
         if (info != null) {
             int direccion = info.getDireccion();
             return obtenerValorPorDireccion(direccion);
         }
 
-        // Si es null o _, retornar null
         if (identificador.equals("null") || identificador.equals("_")) {
             return null;
         }
 
-        // Si es un número literal pequeño, usarlo directamente
         try {
             if (identificador.contains(".")) {
                 return Float.parseFloat(identificador);
@@ -387,13 +390,11 @@ public class MaquinaVirtual {
     }
 
     private void asignarValor(String identificador, Object valor) {
-        // Si es un temporal
         if (identificador.matches("t\\d+")) {
             memoriaTemporales.put(identificador, valor);
             return;
         }
 
-        // Si es un nombre de variable, obtener su dirección
         TablaVariables.InfoVariable info = tablaVariables.obtenerVariable(identificador);
         if (info != null) {
             int direccion = info.getDireccion();
@@ -461,36 +462,36 @@ public class MaquinaVirtual {
     }
 
     private void imprimirEstadoMemoria() {
-        System.out.println("\n=== ESTADO FINAL DE MEMORIA ===");
+        outputManager.debugPrint("\n=== ESTADO FINAL DE MEMORIA ===");
 
-        System.out.println("Variables Globales Int:");
+        outputManager.debugPrint("Variables Globales Int:");
         for (Map.Entry<Integer, Object> entry : memoriaGlobalInt.entrySet()) {
             String nombre = obtenerNombreVariable(entry.getKey());
-            System.out.println("  " + nombre + " [" + entry.getKey() + "] = " + entry.getValue());
+            outputManager.debugPrint("  " + nombre + " [" + entry.getKey() + "] = " + entry.getValue());
         }
 
-        System.out.println("Variables Globales Float:");
+        outputManager.debugPrint("Variables Globales Float:");
         for (Map.Entry<Integer, Object> entry : memoriaGlobalFloat.entrySet()) {
             String nombre = obtenerNombreVariable(entry.getKey());
-            System.out.println("  " + nombre + " [" + entry.getKey() + "] = " + entry.getValue());
+            outputManager.debugPrint("  " + nombre + " [" + entry.getKey() + "] = " + entry.getValue());
         }
 
-        System.out.println("Variables Locales Int:");
+        outputManager.debugPrint("Variables Locales Int:");
         for (Map.Entry<Integer, Object> entry : memoriaLocalInt.entrySet()) {
             String nombre = obtenerNombreVariable(entry.getKey());
-            System.out.println("  " + nombre + " [" + entry.getKey() + "] = " + entry.getValue());
+            outputManager.debugPrint("  " + nombre + " [" + entry.getKey() + "] = " + entry.getValue());
         }
 
-        System.out.println("Variables Locales Float:");
+        outputManager.debugPrint("Variables Locales Float:");
         for (Map.Entry<Integer, Object> entry : memoriaLocalFloat.entrySet()) {
             String nombre = obtenerNombreVariable(entry.getKey());
-            System.out.println("  " + nombre + " [" + entry.getKey() + "] = " + entry.getValue());
+            outputManager.debugPrint("  " + nombre + " [" + entry.getKey() + "] = " + entry.getValue());
         }
 
         if (!memoriaTemporales.isEmpty()) {
-            System.out.println("Temporales:");
+            outputManager.debugPrint("Temporales:");
             for (Map.Entry<String, Object> entry : memoriaTemporales.entrySet()) {
-                System.out.println("  " + entry.getKey() + " = " + entry.getValue());
+                outputManager.debugPrint("  " + entry.getKey() + " = " + entry.getValue());
             }
         }
     }

@@ -1,26 +1,33 @@
-program fibo;
+program fibonacci;
 
 var n : int;
-var a : int;
-var b : int;
-var temp : int;
-var i : int;
+var resultado : int;
 
+void fibo(n:int) [
+    var res1 : int;
+    var res2 : int;
+    var temp : int;
+
+    {
+        if (n < 2) {
+            resultado = n;
+        } else {
+            temp = n - 1;
+            fibo(temp);
+            res1 = resultado;
+
+            temp = n - 2;
+            fibo(temp);
+            res2 = resultado;
+
+            resultado = res1 + res2;
+        }
+    }
+];
 
 main {
-    n = 7;
-
-    a = 0;
-    b = 1;
-    i = 2;
-
-    while (i < n) {
-        temp = a + b;
-        a = b;
-        b = temp;
-        i = i + 1;
-    }
-
-    print(b);
+    n = 6;
+    fibo(n);
+    print(resultado);
 }
 end

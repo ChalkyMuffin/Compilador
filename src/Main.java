@@ -1,6 +1,5 @@
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
-
 import java.nio.file.*;
 
 public class Main {
@@ -12,7 +11,7 @@ public class Main {
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         ExprParser parser = new ExprParser(tokens);
 
-        ParseTree tree = parser.prog(); // o la regla raíz que tengas
+        ParseTree tree = parser.prog();
 
         PilasYCuadruplos pilas = new PilasYCuadruplos();
         MiParser visitor = new MiParser(pilas);
@@ -26,12 +25,41 @@ public class Main {
         System.out.println("\n=== CUÁDRUPLOS ===");
         pilas.imprimirCuadruplos();
 
-        // Ejecutar los cuádruplos
-        MaquinaVirtual mv = new MaquinaVirtual(
+        // OPCIÓN 1: Ejecutar con debug completo (como antes)
+        System.out.println("\n" + "=".repeat(60));
+        System.out.println("EJECUCIÓN CON INFORMACIÓN DE DEBUG:");
+        System.out.println("=".repeat(60));
+
+        OutputManager outputManagerDebug = new OutputManager(true); // con debug
+        MaquinaVirtual mvDebug = new MaquinaVirtual(
                 pilas.listaCuadruplos(),
                 visitor.tabla,
-                visitor.tablaConstantes
+                visitor.tablaConstantes,
+                outputManagerDebug,visitor.pilas
         );
-        mv.ejecutar();
+        mvDebug.ejecutar();
+
+        // OPCIÓN 2: Ejecutar solo mostrando la salida del programa
+        System.out.println("\n" + "=".repeat(60));
+        System.out.println("EJECUCIÓN LIMPIA (SOLO SALIDA DEL PROGRAMA):");
+        System.out.println("=".repeat(60));
+
+        OutputManager outputManagerClean = new OutputManager(false); // sin debug
+        MaquinaVirtual mvClean = new MaquinaVirtual(
+                pilas.listaCuadruplos(),
+                visitor.tabla,
+                visitor.tablaConstantes,
+                outputManagerClean, visitor.pilas
+        );
+        mvClean.ejecutar();
+
+        // OPCIÓN 3: Obtener la salida programáticamente
+        System.out.println("\n" + "=".repeat(60));
+        System.out.println("SALIDA OBTENIDA PROGRAMÁTICAMENTE:");
+        System.out.println("=".repeat(60));
+
+        for (String linea : mvClean.getProgramOutput()) {
+            System.out.println("Salida: " + linea);
+        }
     }
 }
