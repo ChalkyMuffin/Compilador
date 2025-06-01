@@ -89,11 +89,9 @@ public class MaquinaVirtual {
 
         // Guardar dirección de retorno
         pilaRetorno.push(punteroInstruccion + 1);
-        System.out.println("Puntero retorno = " + punteroInstruccion + 1);
 
         // Buscar dirección de inicio de la función
-        // Aquí necesitarías acceso al DirectorioFunciones
-        // Por simplicidad, buscaremos la función por nombre en los cuádruplos
+        // Se usa el metodo de directorio de funciones para conseguir la direccion de inicio
         DirectorioFunciones dirFun = new DirectorioFunciones();
         int direccionFuncion = dirFun.getDireccionInicio(nombreFuncion);
 
@@ -101,7 +99,7 @@ public class MaquinaVirtual {
             // Inicializar parámetros en memoria local
             inicializarParametros(nombreFuncion);
 
-            punteroInstruccion = direccionFuncion;
+            punteroInstruccion = direccionFuncion - 1;
         } else {
             System.err.println("Error: Función " + nombreFuncion + " no encontrada");
         }
