@@ -4,7 +4,7 @@ import java.nio.file.*;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        String input = Files.readString(Path.of("factorial.txt"));
+        String input = Files.readString(Path.of("input.txt"));
 
         CharStream cs = CharStreams.fromString(input);
         ExprLexer lexer = new ExprLexer(cs);
@@ -13,7 +13,7 @@ public class Main {
 
         ParseTree tree = parser.prog();
 
-        PilasYCuadruplos pilas = new PilasYCuadruplos();
+        Cuadruplos pilas = new Cuadruplos();
         MiParser visitor = new MiParser(pilas);
         visitor.visit(tree);
 

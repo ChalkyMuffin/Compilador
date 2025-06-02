@@ -66,43 +66,8 @@ public class TablaVariables {
         throw new IllegalArgumentException("Tipo no soportado: " + tipo);
     }
 
-    public Integer obtenerDireccion(String nombre) {
-        InfoVariable variable = variables.get(nombre);
-        if (variable != null) {
-            return variable.getDireccion();
-        } else {
-            System.out.println("Error: variable '" + nombre + "' no encontrada.");
-            return null;
-        }
-    }
 
-    public int obtenerUltimaDireccionLocalFloat() {
-        int ultimaDireccion = 13000; // Dirección base para variables locales float
 
-        for (InfoVariable var : variables.values()) {
-            if (!var.esGlobal() && var.getTipo().equals("float")) {
-                if (var.getDireccion() >= ultimaDireccion) {
-                    ultimaDireccion = var.getDireccion() + 1;
-                }
-            }
-        }
-
-        return ultimaDireccion;
-    }
-
-    public int obtenerUltimaDireccionLocalInt() {
-        int ultimaDireccion = 11000; // Dirección base para variables locales int
-
-        for (InfoVariable var : variables.values()) {
-            if (!var.esGlobal() && var.getTipo().equals("int")) {
-                if (var.getDireccion() >= ultimaDireccion) {
-                    ultimaDireccion = var.getDireccion() + 1;
-                }
-            }
-        }
-
-        return ultimaDireccion;
-    }
 
     public void imprimirVariables() {
         System.out.println("=== Tabla de Variables ===");
@@ -115,6 +80,7 @@ public class TablaVariables {
         }
     }
 
+    // Contar variables ya insertadas y registrar función
     public Map<String, Integer> contarVariablesPorTipo() {
         Map<String, Integer> conteo = new LinkedHashMap<>();
         for (InfoVariable var : variables.values()) {
@@ -126,23 +92,13 @@ public class TablaVariables {
         return conteo;
     }
 
-    public Map<String, InfoVariable> getVariablesLocales() {
-        Map<String, InfoVariable> locales = new LinkedHashMap<>();
-        for (Map.Entry<String, InfoVariable> entry : variables.entrySet()) {
-            if (!entry.getValue().esGlobal()) {
-                System.out.println("Variables locales2: " + entry.getKey() + " "+ entry.getValue());
-                locales.put(entry.getKey(), entry.getValue());
-            }
-        }
-        return locales;
-    }
 
-    // Método para obtener información de una variable
+    // Se utiliza para saber si una variable ya ha sido declarada antes
     public InfoVariable obtenerVariable(String nombre) {
         return variables.get(nombre);
     }
 
-    // Método para obtener todas las variables
+    // Usada para parsear por todas las variables
     public Map<String, InfoVariable> obtenerTodasLasVariables() {
         return new LinkedHashMap<>(variables);
     }

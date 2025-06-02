@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -8,12 +7,12 @@ public class MiParser extends ExprBaseVisitor<Void> {
 
     @Override
     public Void visitProg(ExprParser.ProgContext ctx) {
-        // PRIMER cuádruplo: GOTO hacia main (con dirección pendiente)
+        // Primer cuadruplo: GOTO hacia main
         pilas.agregarCuadruplo("GOTO", "main", "_", "pendiente");
-        int indiceGotoMain = pilas.cuadruplos.size() - 1; // Guardar índice para backpatch
-        pilas.saltos.push(indiceGotoMain); // Guardar en pila de saltos
+        int indiceGotoMain = pilas.cuadruplos.size() - 1;
+        pilas.saltos.push(indiceGotoMain);
 
-        // Continuar con el procesamiento normal del programa
+        // Continuar con el procesamiento normal
         return visitChildren(ctx);
     }
 
@@ -79,7 +78,6 @@ public class MiParser extends ExprBaseVisitor<Void> {
         String nombreFuncion = ctx.ID().getText();
         String tipoRetorno = "void";
 
-        List<String> tiposParametros = new ArrayList<>();
         Map<String, Integer> contadorTipos = new HashMap<>();
 
         // Cuenta tipos de parametros para la memoria
@@ -165,9 +163,9 @@ public class MiParser extends ExprBaseVisitor<Void> {
 
 
     //Cuadruplos
-    PilasYCuadruplos pilas;
+    Cuadruplos pilas;
 
-    public MiParser(PilasYCuadruplos pilas) {
+    public MiParser(Cuadruplos pilas) {
         this.pilas = pilas;
     }
 

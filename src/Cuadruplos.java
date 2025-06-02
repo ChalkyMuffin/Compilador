@@ -1,6 +1,11 @@
-import java.util.*;
+import java.util.Stack;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+import java.util.Arrays;
+import java.util.ArrayList;
 
-public class PilasYCuadruplos {
+public class Cuadruplos {
     public Stack<String> operandos = new Stack<>();
     public Stack<String> operadores = new Stack<>();
     public Stack<String> tipos = new Stack<>();
@@ -21,20 +26,6 @@ public class PilasYCuadruplos {
             System.out.printf("%02d: (%s, %s, %s, %s)%n", i++, cuad.get(0), cuad.get(1), cuad.get(2), cuad.get(3));
         }
 
-    }
-
-    public String imprimirParametroCuadruplo(int numCuadruplo, int indiceParametro) {
-        if (numCuadruplo < 1 || indiceParametro < 0 || indiceParametro > 3) {
-            throw new IllegalArgumentException("Índices fuera de rango.");
-        }
-
-        List<List<String>> lista = new ArrayList<>(cuadruplos);
-        if (numCuadruplo > lista.size()) {
-            throw new IllegalArgumentException("Número de cuádruplo fuera de rango.");
-        }
-
-        List<String> cuadruplo = lista.get(numCuadruplo - 1); // -1 porque empiezas a imprimir desde 1
-        return cuadruplo.get(indiceParametro);
     }
 
     public String nuevoTemporal() {

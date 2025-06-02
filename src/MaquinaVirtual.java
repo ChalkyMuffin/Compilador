@@ -16,26 +16,21 @@ public class MaquinaVirtual {
     private TablaVariables tablaVariables;
     private TablaConstantes tablaConstantes;
     private OutputManager outputManager; // AGREGADO
-    private PilasYCuadruplos pilasYCuadruplos; // AGREGADO
+    private Cuadruplos Cuadruplos; // AGREGADO
 
     private Stack<Integer> pilaRetorno = new Stack<>();
     private Stack<Map<Integer, Object>> pilaMemoriaLocal = new Stack<>();
     private Map<String, Object> parametrosActuales = new HashMap<>();
 
-    // CONSTRUCTOR MODIFICADO
+
     public MaquinaVirtual(List<List<String>> cuadruplos, TablaVariables tablaVariables,
-                          TablaConstantes tablaConstantes, OutputManager outputManager, PilasYCuadruplos pilasYCuadruplos) {
+                          TablaConstantes tablaConstantes, OutputManager outputManager, Cuadruplos Cuadruplos) {
         this.cuadruplos = cuadruplos;
         this.tablaVariables = tablaVariables;
         this.tablaConstantes = tablaConstantes;
         this.outputManager = outputManager;
-        this.pilasYCuadruplos = pilasYCuadruplos;
+        this.Cuadruplos = Cuadruplos;
         inicializarMemoria();
-    }
-
-    // Constructor alternativo para mantener compatibilidad (con debug por defecto)
-    public MaquinaVirtual(List<List<String>> cuadruplos, TablaVariables tablaVariables, TablaConstantes tablaConstantes, PilasYCuadruplos pilasYCuadruplos) {
-        this(cuadruplos, tablaVariables, tablaConstantes, new OutputManager(true), pilasYCuadruplos);
     }
 
     private void inicializarMemoria() {
@@ -139,16 +134,7 @@ public class MaquinaVirtual {
         punteroInstruccion = pilaRetorno.pop();
     }
 
-    private int buscarDireccionFuncion(String nombreFuncion) {
-        // Buscar en los cuádruplos una función con el nombre dado
-        for (int i = 0; i < cuadruplos.size(); i++) {
-            List<String> cuad = cuadruplos.get(i);
-            if (cuad.get(0).equals("ERA") && cuad.get(1).equals(nombreFuncion)) {
-                return i + 1;
-            }
-        }
-        return -1;
-    }
+
 
     private void inicializarParametros(int instruccionPuntero) {
         // Inicializar parámetros en memoria local
@@ -313,7 +299,7 @@ public class MaquinaVirtual {
         System.out.println("  " + resultado + " = " + num1 + " " + operador + " " + num2 + " = " + res);
     }
 
-    // MÉTODO PRINT MODIFICADO - AQUÍ ESTÁ EL CAMBIO PRINCIPAL
+
     private void print(String arg) {
         Object valor = obtenerValor(arg);
 
@@ -343,13 +329,13 @@ public class MaquinaVirtual {
         }
     }
 
-    // MÉTODO PARA OBTENER SOLO LA SALIDA DEL PROGRAMA
+    // Obtener solo la salida del programa
     public List<String> getProgramOutput() {
         return outputManager.getProgramOutput();
     }
 
 
-    // Resto de métodos sin cambios...
+
     private Object obtenerValor(String identificador) {
         if (identificador.matches("\\d+")) {
             int direccion = Integer.parseInt(identificador);
