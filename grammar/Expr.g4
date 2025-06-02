@@ -21,7 +21,7 @@ funcs_decl : 'void' ID '(' params? ')'
 
 
 
-body     : '{' (vars_decl | statement)* '}' ;
+body     : '{'   statement* '}' ;
 
 statement: assign ';'          # assignStat
         | condition           # condStat

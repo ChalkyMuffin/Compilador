@@ -1,0 +1,27 @@
+program factorial;
+
+var n : int;
+var resultado : int;
+
+void fact(int n) [
+    var temp : int;
+    var resTemp : int;
+
+    {
+        if (n < 2) {
+            resultado = 1;
+        } else {
+            temp = n - 1;
+            fact(temp);
+            resTemp = resultado;
+            resultado = n * resTemp;
+        }
+    }
+];
+
+main {
+    n = 5;
+    fact(n);
+    print(resultado);
+}
+end

@@ -2,6 +2,8 @@ program lol;
 var c : int;
 var d : int;
 var e : float;
+var p : int;
+
 
 void ejemploFuncion(fun:int, unfun:float)
 [var a : int;
@@ -24,14 +26,12 @@ if (c > 0){
 
    ejemploFuncion(c ,e);
 }
-else{
-var p : int;
-p = 8;
-while (p < 10){
-print(p);
-p = p + 1;
+    else{
+    p = 8;
+    while (p < 10){
+    print(p);
+    p = p + 1;
 
 }
 }
-
 }end;

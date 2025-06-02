@@ -16,7 +16,7 @@ public class Main {
         Cuadruplos pilas = new Cuadruplos();
         MiParser visitor = new MiParser(pilas);
         visitor.visit(tree);
-
+//
         visitor.imprimirVariables();
         visitor.imprimirConstantes();
         visitor.imprimirFunciones();
@@ -53,13 +53,6 @@ public class Main {
         );
         mvClean.ejecutar();
 
-        // OPCIÓN 3: Obtener la salida programáticamente
-        System.out.println("\n" + "=".repeat(60));
-        System.out.println("SALIDA OBTENIDA PROGRAMÁTICAMENTE:");
-        System.out.println("=".repeat(60));
 
-        for (String linea : mvClean.getProgramOutput()) {
-            System.out.println("Salida: " + linea);
-        }
     }
 }

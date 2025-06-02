@@ -106,7 +106,6 @@ public class MaquinaVirtual {
     private void endfunc() {
         System.out.println("  ENDFUNC: Retornando de función");
 
-        // AGREGAR ESTA VERIFICACIÓN
         if (pilaRetorno.isEmpty()) {
             System.out.println("  ENDFUNC ignorado - no hay función activa");
             return; // Simplemente continuar sin hacer nada
