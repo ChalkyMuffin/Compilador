@@ -20,7 +20,6 @@ funcs_decl : 'void' ID '(' params? ')'
              body ']' ';';
 
 
-//main_body : 'main' body ;
 
 body     : '{' (vars_decl | statement)* '}' ;
 

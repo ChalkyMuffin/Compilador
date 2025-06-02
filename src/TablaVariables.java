@@ -1,4 +1,5 @@
-import java.util.*;
+import java.util.Map;
+import java.util.LinkedHashMap;
 
 public class TablaVariables {
     // Clase interna para almacenar información de la variable
@@ -141,7 +142,7 @@ public class TablaVariables {
         return variables.get(nombre);
     }
 
-    // NUEVO: Método para obtener todas las variables (necesario para la MaquinaVirtual)
+    // Método para obtener todas las variables
     public Map<String, InfoVariable> obtenerTodasLasVariables() {
         return new LinkedHashMap<>(variables);
     }
