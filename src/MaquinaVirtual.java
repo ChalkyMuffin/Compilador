@@ -348,10 +348,6 @@ public class MaquinaVirtual {
         return outputManager.getProgramOutput();
     }
 
-    // MÉTODO PARA CAMBIAR MODO DEBUG
-    public void setDebugMode(boolean debug) {
-        this.outputManager = new OutputManager(debug);
-    }
 
     // Resto de métodos sin cambios...
     private Object obtenerValor(String identificador) {

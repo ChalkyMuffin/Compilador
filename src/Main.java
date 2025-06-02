@@ -4,7 +4,7 @@ import java.nio.file.*;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        String input = Files.readString(Path.of("input.txt"));
+        String input = Files.readString(Path.of("factorial.txt"));
 
         CharStream cs = CharStreams.fromString(input);
         ExprLexer lexer = new ExprLexer(cs);
